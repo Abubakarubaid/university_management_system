@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:university_management_system/models/class_model.dart';
+import 'package:university_management_system/models/user_model.dart';
 import 'package:university_management_system/ui/teacher/teacher_subjects/teacher_students.dart';
 import 'package:university_management_system/widgets/primary_text_field.dart';
 import '../../../assets/app_assets.dart';
 import '../../../models/attendance_model.dart';
+import '../../../models/attendence_complete_model.dart';
 import '../../../models/subject_model.dart';
 import '../../../models/user_model_attendance.dart';
 import '../../../widgets/primary_dropdown_field.dart';
 import '../../../widgets/progress_bar.dart';
 
 class AttendanceDetails extends StatefulWidget {
-  AttendanceDetailModel attendanceDetailModel;
-  AttendanceDetails({required this.attendanceDetailModel, Key? key}) : super(key: key);
+  AttendanceCompleteModel attendanceCompleteModel;
+  List<AttendanceCompleteModel> completeList;
+  AttendanceDetails({required this.attendanceCompleteModel, required this.completeList, Key? key}) : super(key: key);
   @override
   State<AttendanceDetails> createState() => _AttendanceDetailsState();
 }
 
 class _AttendanceDetailsState extends State<AttendanceDetails> {
 
-  List<UserModelAttendance> usersList = [];
+  List<UserModel> usersList = [];
 
   @override
   void initState() {
@@ -29,11 +32,32 @@ class _AttendanceDetailsState extends State<AttendanceDetails> {
   }
 
   setData() {
-    widget.attendanceDetailModel.presentStudents.forEach((element) {
-      //usersList.add(element);
+    //For Present
+    widget.attendanceCompleteModel.presentStudents.forEach((element) {
+      int count = 0;
+      widget.completeList.forEach((data) {
+        count = count + data.presentStudents.where((c) => c.userId == element.userId).toList().length;
+      });
+
+      double value = (count/widget.completeList.length)*100;
+      String inString = value.toStringAsFixed(1);
+      element.overAllAttendancePercentage = double.parse(inString);
+      element.attendanceStatus = "Present";
+      usersList.add(element);
     });
-    widget.attendanceDetailModel.absentStudents.forEach((element) {
-      //usersList.add(element);
+
+    //For Absent
+    widget.attendanceCompleteModel.absentStudents.forEach((element) {
+      int count = 0;
+      widget.completeList.forEach((data) {
+        count = count + data.presentStudents.where((c) => c.userId == element.userId).toList().length;
+      });
+
+      double value = (count/widget.completeList.length)*100;
+      String inString = value.toStringAsFixed(1);
+      element.overAllAttendancePercentage = double.parse(inString);
+      element.attendanceStatus = "Absent";
+      usersList.add(element);
     });
 
     setState(() {});
@@ -73,17 +97,17 @@ class _AttendanceDetailsState extends State<AttendanceDetails> {
                                       color: AppAssets.whiteColor,
                                       borderRadius: BorderRadius.circular(40),
                                     ),
-                                    child: SvgPicture.asset(usersList[index].userGender == "Male"? AppAssets.maleAvatar : AppAssets.femaleAvatar, fit: BoxFit.cover,)
+                                    child: SvgPicture.asset(usersList[index].userGender == "male"? AppAssets.maleAvatar : AppAssets.femaleAvatar, fit: BoxFit.cover,)
                                 ),
                                 Container(
                                   clipBehavior: Clip.antiAlias,
                                   width: 60,
                                   height: 60,
                                   decoration: BoxDecoration(
-                                    color: usersList[index].attendanceStatus.isEmpty ? AppAssets.transparentColor : usersList[index].attendanceStatus == "Present" ? AppAssets.successColor.withOpacity(0.8) : AppAssets.failureColor.withOpacity(0.8),
+                                    color: usersList[index].attendanceStatus == "Present" ? AppAssets.successColor.withOpacity(0.8) : AppAssets.failureColor.withOpacity(0.8),
                                     borderRadius: BorderRadius.circular(40),
                                   ),
-                                  child: Center(child: Text(usersList[index].attendanceStatus.isEmpty ? "" : usersList[index].attendanceStatus == "Present" ? "P" : "A", style: AppAssets.latoBold_whiteColor_30,)),
+                                  child: Center(child: Text(usersList[index].attendanceStatus == "Present" ? "P" : "A", style: AppAssets.latoBold_whiteColor_26,)),
                                 ),
                               ]),
                             ),
@@ -153,7 +177,7 @@ class _AttendanceDetailsState extends State<AttendanceDetails> {
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(color: AppAssets.successColor, width: 2),
                           ),
-                          child: Center(child: Text(widget.attendanceDetailModel.presentStudents.length.toString(), style: AppAssets.latoBold_successColor_24,)),
+                          child: Center(child: Text(widget.attendanceCompleteModel.presentStudents.length.toString(), style: AppAssets.latoBold_successColor_24,)),
                         ),
                         const SizedBox(height: 6,),
                         Text("Present", style: AppAssets.latoBold_textDarkColor_14,)
@@ -169,7 +193,7 @@ class _AttendanceDetailsState extends State<AttendanceDetails> {
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(color: AppAssets.failureColor, width: 2),
                           ),
-                          child: Center(child: Text(widget.attendanceDetailModel.absentStudents.length.toString(), style: AppAssets.latoBold_failureColor_24,)),
+                          child: Center(child: Text(widget.attendanceCompleteModel.absentStudents.length.toString(), style: AppAssets.latoBold_failureColor_24,)),
                         ),
                         const SizedBox(height: 6,),
                         Text("Absent", style: AppAssets.latoBold_textDarkColor_14,)
@@ -185,7 +209,7 @@ class _AttendanceDetailsState extends State<AttendanceDetails> {
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(color: Colors.blue, width: 2),
                           ),
-                          child: Center(child: Text((widget.attendanceDetailModel.presentStudents.length + widget.attendanceDetailModel.absentStudents.length).toString(), style: AppAssets.latoBold_blueColor_24,)),
+                          child: Center(child: Text((widget.attendanceCompleteModel.presentStudents.length + widget.attendanceCompleteModel.absentStudents.length).toString(), style: AppAssets.latoBold_blueColor_24,)),
                         ),
                         const SizedBox(height: 6,),
                         Text("Total", style: AppAssets.latoBold_textDarkColor_14,)

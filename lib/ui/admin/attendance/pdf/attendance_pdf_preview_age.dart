@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
+import 'package:university_management_system/models/attendence_complete_model.dart';
+import 'package:university_management_system/models/user_model.dart';
 import '../../../../assets/app_assets.dart';
 import '../../../../models/attendance_model.dart';
 import '../../../../models/user_small_model.dart';
 import 'attendance_pdf_export.dart';
 
 class AttendancePdfPreview extends StatelessWidget {
-  List<AttendanceDetailModel> detailsList;
-  List<UserSmallModel> allStudents;
+  List<AttendanceCompleteModel> detailsList;
+  List<UserModel> allStudents;
   AttendancePdfPreview({required this.detailsList, required this.allStudents, Key? key}) : super(key: key);
 
   @override

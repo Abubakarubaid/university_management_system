@@ -11,10 +11,13 @@ import '../../../models/class_model.dart';
 import '../../../models/dpt_model.dart';
 import '../../../models/single_teacher_model.dart';
 import '../../../models/teacher_workload_model.dart';
+import '../../../providers/app_provider.dart';
 import '../../../utilities/base/my_message.dart';
+import '../../../utilities/constants.dart';
 import '../../../widgets/primary_dropdown_field.dart';
 import '../../../widgets/progress_bar.dart';
 import 'mark_attendance.dart';
+import 'package:provider/provider.dart';
 
 class TeacherAttendance extends StatefulWidget {
   SingleTeacherModel teacherModel;
@@ -25,31 +28,6 @@ class TeacherAttendance extends StatefulWidget {
 }
 
 class _TeacherAttendanceState extends State<TeacherAttendance> {
-
-  /*var itemsClass = [
-    "Select Class",
-    "Class 1",
-    "Class 2",
-    "Class 3",
-  ];
-
-  String classSelectedValue = "Select Class";
-
-  var itemsDpt = [
-    "Select Department",
-    "Department 1",
-    "Department 2",
-    "Department 3",
-  ];
-  String dptSelectedValue = "Select Department";
-
-  var itemsSubjects = [
-    "Select Subject",
-    "Subject 1",
-    "Subject 2",
-    "Subject 3",
-  ];
-  String subjectSelectedValue = "Select Subject";*/
 
   List<DepartmentModel> departmentList = [];
   DepartmentModel dptSelectedValue = DepartmentModel(departmentId: 0, departmentName: "Select Department", departmentType: "Demo");
@@ -63,10 +41,16 @@ class _TeacherAttendanceState extends State<TeacherAttendance> {
   SubjectModel subjectSelectedValue = SubjectModel(subjectId: 0, subjectCode: "", subjectName: "Select Subject", creditHours: 0, departmentModel: DepartmentModel.getInstance());
   var subjectItems;
 
+  String authToken = "";
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    Constants.getAuthToken().then((value) {
+      authToken = value;
+    });
 
     getDepartments(false);
     getClasses(false);
@@ -238,7 +222,7 @@ class _TeacherAttendanceState extends State<TeacherAttendance> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Container(
+        child: Consumer<AppProvider>(builder: (context, appProvider, child)=>Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           color: AppAssets.backgroundColor,
@@ -360,7 +344,7 @@ class _TeacherAttendanceState extends State<TeacherAttendance> {
                   ),
                   const SizedBox(height: 30,),
                   Visibility(
-                    visible: true,
+                    visible: !appProvider.progress,
                     child: PrimaryButton(
                       width: double.infinity,
                       height: 50,
@@ -391,7 +375,7 @@ class _TeacherAttendanceState extends State<TeacherAttendance> {
                   ),
                   Text("OR"),
                   Visibility(
-                    visible: true,
+                    visible: !appProvider.progress,
                     child: PrimaryButton(
                       width: double.infinity,
                       height: 50,
@@ -407,12 +391,27 @@ class _TeacherAttendanceState extends State<TeacherAttendance> {
                         }else if(classSelectedValue == "Select Class"){
                           MyMessage.showFailedMessage("Please choose Class", context);
                         }else {
-                          //Navigator.of(context).push(MaterialPageRoute(builder: (context) => FetchAttendance(selectedClass: classSelectedValue, selectedDepartment: dptSelectedValue, selectedSubject: subjectSelectedValue,)));
+                          TeacherWorkloadModel teacherWorkloadModel = widget.teacherModel.workloadList[widget.teacherModel.workloadList.indexWhere((element) =>
+                          element.departmentModel.departmentId == dptSelectedValue.departmentId &&
+                              element.classModel.classId == classSelectedValue.classId &&
+                              element.subjectModel.subjectId == subjectSelectedValue.subjectId)];
+
+                          Provider.of<AppProvider>(context, listen: false).fetchAttendance(teacherWorkloadModel.workloadId, authToken).then((value) async {
+                            if(value.isSuccess){
+                              if(appProvider.attendanceList.isNotEmpty) {
+                                Navigator.of(context).push(MaterialPageRoute(builder: (context) => FetchAttendance(attendanceList: appProvider.attendanceList,)));
+                              }else{
+                                MyMessage.showFailedMessage("There is no attendance record", context);
+                              }
+                            }else{
+                              MyMessage.showFailedMessage(value.message, context);
+                            }
+                          });
                         }
                       },
                     ),
                   ),
-                  const Visibility(visible: false, child: SizedBox(height:80, child: ProgressBarWidget())),
+                  Visibility(visible: appProvider.progress, child: const SizedBox(height:80, child: ProgressBarWidget())),
                 ],),
               ),
             ),
@@ -437,7 +436,7 @@ class _TeacherAttendanceState extends State<TeacherAttendance> {
               ],),
             ),
           ]),
-        ),
+        ),),
       ),
     );
   }

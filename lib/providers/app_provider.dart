@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:university_management_system/models/attendence_complete_model.dart';
 import 'package:university_management_system/models/class_model.dart';
 import 'package:university_management_system/models/datesheet_model.dart';
 import 'package:university_management_system/models/demo_model.dart';
@@ -15,6 +16,7 @@ import 'package:university_management_system/repositories/app_repo.dart';
 import 'package:university_management_system/utilities/constants.dart';
 import 'package:university_management_system/utilities/ip_configurations.dart';
 
+import '../models/attendance_model.dart';
 import '../models/dpt_model.dart';
 import '../models/response_model.dart';
 import '../models/single_teacher_model.dart';
@@ -42,6 +44,7 @@ class AppProvider with ChangeNotifier{
   List<WorkloadAssignmentModel> workloadList = [];
   List<DatesheetModel> dateSheetList = [];
   SingleTeacherModel singleTeacherModel = SingleTeacherModel.getInstance();
+  List<AttendanceCompleteModel> attendanceList = [];
 
   /// Department Provider
   Future<ResponseModel> addDepartment(String departmentName, String departmentType, String token)async{
@@ -954,28 +957,27 @@ class AppProvider with ChangeNotifier{
           teacherWorkloadModel.workDemanded = workLoadElement["work_demanded"];
           teacherWorkloadModel.classRoutine = workLoadElement["routine"];
 
-          List<UserModel> newStudent = [];
           workLoadElement["department_class"]["students"].forEach((student) {
             UserModel studentModel = UserModel.getInstance();
-            studentModel.userId = student["id"];
-            studentModel.userName = student["name"].toString();
-            studentModel.userEmail = student["email"].toString();
-            studentModel.userPhone = student["phone"].toString();
-            studentModel.userGender = student["gender"].toString();
-            studentModel.userImage = student["image"].toString();
-            studentModel.userType = student["type"].toString();
-            studentModel.userStatus = student["status"].toString();
-            studentModel.userAddress = student["address"].toString();
-            studentModel.userCnic = student["cnic_no"].toString();
-            studentModel.userDepartment = student["student_profile"]["department_id"].toString();
-            studentModel.userSession = student["student_profile"]["session"].toString();
-            studentModel.userRollNo = student["student_profile"]["roll_no"].toString();
-            studentModel.userClass = student["student_profile"]["class_id"].toString();
+            studentModel.userId = int.parse(student["user_id"]);
+            studentModel.userName = student["student_profile"]["name"].toString();
+            studentModel.userEmail = student["student_profile"]["email"].toString();
+            studentModel.userPhone = student["student_profile"]["phone"].toString();
+            studentModel.userGender = student["student_profile"]["gender"].toString();
+            studentModel.userImage = student["student_profile"]["image"].toString();
+            studentModel.userType = student["student_profile"]["type"].toString();
+            studentModel.userStatus = student["student_profile"]["status"].toString();
+            studentModel.userAddress = student["student_profile"]["address"].toString();
+            studentModel.userCnic = student["student_profile"]["cnic_no"].toString();
+            studentModel.userDepartment = student["department_id"].toString();
+            studentModel.userSession = student["session"].toString();
+            studentModel.userRollNo = student["roll_no"].toString();
+            studentModel.userClass = student["class_id"].toString();
 
-            newStudent.add(studentModel);
+            teacherWorkloadModel.studentList.add(studentModel);
           });
 
-          teacherWorkloadModel.studentList = newStudent;
+          //teacherWorkloadModel.studentList = newStudent;
           newWorkLoad.add(teacherWorkloadModel);
           print("___________: Class: ${teacherWorkloadModel.classModel.classId} - Students: ${teacherWorkloadModel.studentList.length}");
         });
@@ -988,6 +990,8 @@ class AppProvider with ChangeNotifier{
       print("___________: User Id: ${singleTeacherModel.userModel.userId}");
       print("___________: Department Id: ${singleTeacherModel.departmentModel.departmentId}");
       print("___________: WorkloadList Length: ${singleTeacherModel.workloadList.length}");
+      print("___________: Student Length: ${singleTeacherModel.workloadList[2].studentList[0].userName}");
+      print("___________: Student Length: ${singleTeacherModel.workloadList[2].studentList[1].userName}");
 
 
       responseModel = ResponseModel(true, parsedResponse["message"]);
@@ -1268,6 +1272,144 @@ class AppProvider with ChangeNotifier{
       String errorMessage = parsedResponse["message"];
       responseModel = ResponseModel(false, errorMessage);
       dialogProgress = false;
+    }
+    notifyListeners();
+    return responseModel;
+  }
+//----------------------------------------------------------------------------//
+
+  /// Attendance Provider
+  Future<ResponseModel> addAttendance(AttendanceDetailModel model, String token)async{
+    progress = true;
+    notifyListeners();
+    ResponseModel responseModel;
+
+    ApiResponse apiResponse = await appRepo.addAttendance(model, token);
+
+    var parsedResponse = json.decode(apiResponse.response!.body);
+    Constants.printMessage(Constants.ATTENDANCE_ADD, parsedResponse.toString());
+
+    if (apiResponse.response != null && parsedResponse["success"]) {
+      responseModel = ResponseModel(true, parsedResponse["message"]);
+      progress = false;
+    } else {
+      String errorMessage = parsedResponse["message"];
+      responseModel = ResponseModel(false, errorMessage);
+      progress = false;
+    }
+    notifyListeners();
+    return responseModel;
+  }
+
+  Future<ResponseModel> fetchAttendance(int workloadId, String token)async{
+    progress = true;
+    notifyListeners();
+    attendanceList.clear();
+    ResponseModel responseModel;
+
+    ApiResponse apiResponse = await appRepo.fetchAttendance(workloadId, token);
+
+    var parsedResponse = json.decode(apiResponse.response!.body);
+    Constants.printMessage(Constants.ATTENDANCE_FETCH, parsedResponse.toString());
+
+    if (apiResponse.response != null && parsedResponse["success"]) {
+
+      parsedResponse["data"].forEach((element) {
+        AttendanceCompleteModel attendanceCompleteModel =  AttendanceCompleteModel.getInstance();
+        attendanceCompleteModel.attendanceId = element["id"];
+        attendanceCompleteModel.workloadId = int.parse(element["workloads_id"]);
+        attendanceCompleteModel.attendanceDate = element["date"];
+        attendanceCompleteModel.attendanceTime = element["time"];
+        attendanceCompleteModel.attendanceStatus = element["status"];
+
+        List<UserModel> presentList = [];
+        element["present"].forEach((present) {
+          UserModel userModel = UserModel.getInstance();
+          userModel.userId = present["id"];
+          userModel.userName = present["name"].toString();
+          userModel.userEmail = present["email"].toString();
+          userModel.userPhone = present["phone"].toString();
+          userModel.userGender = present["gender"].toString();
+          userModel.userImage = present["image"].toString();
+          userModel.userType = present["type"].toString();
+          userModel.userStatus = present["status"].toString();
+          userModel.userCnic = present["cnic_no"].toString();
+          userModel.userAddress = present["address"].toString();
+          userModel.userDepartment = present["student"]["department_id"].toString();
+          userModel.userClass = present["student"]["class_id"].toString();
+          userModel.userSession = present["student"]["session"].toString();
+          userModel.userRollNo = present["student"]["roll_no"].toString();
+          presentList.add(userModel);
+        });
+
+        List<UserModel> absentList = [];
+        element["absent"].forEach((absent) {
+          UserModel userModel = UserModel.getInstance();
+          userModel.userId = absent["id"];
+          userModel.userName = absent["name"].toString();
+          userModel.userEmail = absent["email"].toString();
+          userModel.userPhone = absent["phone"].toString();
+          userModel.userGender = absent["gender"].toString();
+          userModel.userImage = absent["image"].toString();
+          userModel.userType = absent["type"].toString();
+          userModel.userStatus = absent["status"].toString();
+          userModel.userCnic = absent["cnic_no"].toString();
+          userModel.userAddress = absent["address"].toString();
+          userModel.userDepartment = absent["student"]["department_id"].toString();
+          userModel.userClass = absent["student"]["class_id"].toString();
+          userModel.userSession = absent["student"]["session"].toString();
+          userModel.userRollNo = absent["student"]["roll_no"].toString();
+          absentList.add(userModel);
+        });
+
+        WorkloadAssignmentModel workloadAssignmentModel = WorkloadAssignmentModel.getInstance();
+        UserModel userModel = UserModel.getInstance();
+        DepartmentModel departmentModel = DepartmentModel.getInstance();
+        ClassModel classModel = ClassModel.getInstance();
+        SubjectModel subjectModel = SubjectModel.getInstance();
+        RoomsModel roomsModel = RoomsModel.getInstance();
+
+        userModel.userId = element["workloads"]["user"]["id"];
+        userModel.userName = element["workloads"]["user"]["name"].toString();
+        userModel.userEmail = element["workloads"]["user"]["email"].toString();
+        userModel.userPhone = element["workloads"]["user"]["phone"].toString();
+        userModel.userGender = element["workloads"]["user"]["gender"].toString();
+        userModel.userImage = element["workloads"]["user"]["image"].toString();
+        userModel.userType = element["workloads"]["user"]["type"].toString();
+        userModel.userStatus = element["workloads"]["user"]["status"].toString();
+        userModel.userDepartment = element["workloads"]["user"]["staff"]["department_id"].toString();
+        userModel.userQualification = element["workloads"]["user"]["staff"]["qualification"].toString();
+        userModel.userDesignation = element["workloads"]["user"]["staff"]["designation"].toString();
+        userModel.totalAllowedCreditHours = int.parse(element["workloads"]["user"]["staff"]["total_allowed_credit_hours"].toString());
+        departmentModel = DepartmentModel.fromJson(element["workloads"]["department"]);
+        classModel = ClassModel.fromJson(element["workloads"]["department_class"]);
+        subjectModel = SubjectModel.fromJson(element["workloads"]["subject"]);
+
+        workloadAssignmentModel.userModel = userModel;
+        workloadAssignmentModel.departmentModel = departmentModel;
+        workloadAssignmentModel.subjectModel = subjectModel;
+        workloadAssignmentModel.classModel = classModel;
+        workloadAssignmentModel.roomsModel = roomsModel;
+
+        workloadAssignmentModel.workloadId = element["workloads"]["id"];
+        workloadAssignmentModel.workloadStatus = element["workloads"]["status"];
+        workloadAssignmentModel.workDemanded = element["workloads"]["work_demanded"];
+        workloadAssignmentModel.classRoutine = element["workloads"]["routine"];
+
+        attendanceCompleteModel.workloadAssignmentModel = workloadAssignmentModel;
+        attendanceCompleteModel.presentStudents = presentList;
+        attendanceCompleteModel.absentStudents = absentList;
+
+        attendanceList.add(attendanceCompleteModel);
+      });
+
+
+      responseModel = ResponseModel(true, parsedResponse["message"]);
+      progress = false;
+    } else {
+      String errorMessage = parsedResponse["message"];
+      responseModel = ResponseModel(false, errorMessage);
+      progress = false;
     }
     notifyListeners();
     return responseModel;

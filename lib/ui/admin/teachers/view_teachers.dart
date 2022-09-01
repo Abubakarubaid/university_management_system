@@ -252,7 +252,7 @@ class _ViewTeachersState extends State<ViewTeachers> {
                         //print("_______________: User_ID: ${appProvider.teacherList[index].userModel.userId} - Workloads: ${appProvider.teacherList[index].workloadList.length}");
                         return GestureDetector(
                           onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => TeacherCompleteProfile(studentModel: appProvider.teacherList[index],),));
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => TeacherCompleteProfile(teacherModel: appProvider.teacherList[index],),));
                           },
                           child: SizedBox(
                             height: 70,

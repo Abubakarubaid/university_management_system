@@ -56,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
   _navigateToNextScreen() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool? isLoggedIn = prefs.getBool("isLoggedIn");
-    String userType = prefs.getString("tyoe").toString();
+    String userType = prefs.getString("type").toString();
 
     print("__________________: ${isLoggedIn} ${userType}");
     await Future.delayed(const Duration(milliseconds: 3000),(){});
@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }else if(isLoggedIn == true && ("teacher" == userType)){
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> TeacherDashboard()));
     }else{
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> TeacherDashboard()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> LoginPage()));
     }
   }
   @override

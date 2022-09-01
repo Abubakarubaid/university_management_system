@@ -18,7 +18,7 @@ class AuthProvider with ChangeNotifier{
   UserModel userModel = UserModel.getInstance();
 
   /// User Login
-  /*Future<ResponseModel> userLogin(String userEmail, String userPassword)async{
+  Future<ResponseModel> userLogin(String userEmail, String userPassword)async{
     progress = true;
     notifyListeners();
     ResponseModel responseModel;
@@ -31,24 +31,53 @@ class AuthProvider with ChangeNotifier{
     if (apiResponse.response != null && parsedResponse["success"] == true) {
       String authToken = parsedResponse["data"]["token"];
 
-      if(parsedResponse["data"]["user_details"].toString() == "null" && parsedResponse["data"]["user"]["type"] == "admin"){
-        userModel = UserModel(
-            userId: parsedResponse["data"]["user"]["id"],
-            userName: parsedResponse["data"]["user"]["name"],
-            userEmail: parsedResponse["data"]["user"]["email"],
-            userPassword: "",
-            userPhone: parsedResponse["data"]["user"]["phone"].toString() == "null" ? "" : parsedResponse["data"]["user"]["phone"],
-            userSession: "",
-            userRollNo: "",
-            userGender: parsedResponse["data"]["user"]["gender"],
-            userDepartment: "",
-            userClass: "",
-            userQualification: "",
-            userDesignation: "",
-            userImage: parsedResponse["data"]["user"]["image"].toString() == "null" ? "" : parsedResponse["data"]["user"]["image"],
-            userType: parsedResponse["data"]["user"]["type"],
-            userStatus: parsedResponse["data"]["user"]["status"].toString() == "null" ? "" : parsedResponse["data"]["user"]["status"],
-            totalAllowedCreditHours: 0);
+      if(parsedResponse["data"]["user"]["type"] == "admin"){
+        var user = parsedResponse["data"]["user"];
+        userModel.userId = user["id"];
+        userModel.userName = user["name"].toString();
+        userModel.userEmail = user["email"].toString();
+        userModel.userPhone = user["phone"].toString();
+        userModel.userGender = user["gender"].toString();
+        userModel.userImage = user["image"].toString();
+        userModel.userType = user["type"].toString();
+        userModel.userStatus = user["status"].toString();
+        userModel.userAddress = user["address"].toString();
+        userModel.userCnic = user["cnic_no"].toString();
+        SharedPreferenceManager.getInstance().setUser(userModel, authToken);
+      } else{
+        var user = parsedResponse["data"]["user"];
+        var userDetails = parsedResponse["data"]["user_details"];
+
+        userModel.userId = user["id"];
+        userModel.userName = user["name"].toString();
+        userModel.userEmail = user["email"].toString();
+        userModel.userPhone = user["phone"].toString();
+        userModel.userGender = user["gender"].toString();
+        userModel.userImage = user["image"].toString();
+        userModel.userType = user["type"].toString();
+        userModel.userStatus = user["status"].toString();
+        userModel.userAddress = user["address"].toString();
+        userModel.userCnic = user["cnic_no"].toString();
+        userModel.userExaminationPassedMPhil = userDetails["userExaminationPassedMPhil"].toString();
+        userModel.mPhilPassedExamSubject = userDetails["mPhilPassedExamSubject"].toString();
+        userModel.mPhilPassedExamYear = userDetails["mPhilPassedExamYear"].toString();
+        userModel.mPhilPassedExamDivision = userDetails["mPhilPassedExamDivision"].toString();
+        userModel.mPhilPassedExamInstitute = userDetails["mPhilPassedExamInstitute"].toString();
+        userModel.userExaminationPassedPhd = userDetails["userExaminationPassedPhd"].toString();
+        userModel.phdPassedExamSubject = userDetails["phdPassedExamSubject"].toString();
+        userModel.phdPassedExamYear = userDetails["phdPassedExamYear"].toString();
+        userModel.phdPassedExamDivision = userDetails["phdPassedExamDivision"].toString();
+        userModel.phdPassedExamInstitute = userDetails["phdPassedExamInstitute"].toString();
+        userModel.userSpecializedField = userDetails["userSpecializedField"].toString();
+        userModel.userGraduationLevelExperience = userDetails["userGraduationLevelExperience"].toString();
+        userModel.userPostGraduationLevelExperience = userDetails["userPostGraduationLevelExperience"].toString();
+        userModel.userSignature = userDetails["Signature"].toString();
+        userModel.userDepartment = userDetails["department_id"].toString();
+        userModel.userQualification = userDetails["qualification"].toString();
+        userModel.userDesignation = userDetails["designation"].toString();
+        userModel.totalAllowedCreditHours = int.parse(userDetails["total_allowed_credit_hours"].toString());
+        userModel.userDesignation = userDetails["designation"].toString();
+
         SharedPreferenceManager.getInstance().setUser(userModel, authToken);
       }
 
@@ -61,9 +90,9 @@ class AuthProvider with ChangeNotifier{
     }
     notifyListeners();
     return responseModel;
-  }*/
+  }
 
-  /// User Login
+  /// User Logout
   Future<ResponseModel> userLogout(String token)async{
     progress = true;
     notifyListeners();

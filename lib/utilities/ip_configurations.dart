@@ -45,4 +45,7 @@ class IPConfigurations{
   static String fetchDateSheetApi = "${serverIp}datesheets";
   static String deleteDateSheetApi = "${serverIp}datesheets";
 
+  static String addAttendanceApi = "${serverIp}attendences";
+  static String fetchAttendanceApi = "${serverIp}attendences";
+
 }

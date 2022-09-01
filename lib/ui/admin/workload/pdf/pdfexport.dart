@@ -47,9 +47,10 @@ _fetchSingleTeacher(List<WorkloadAssignmentModel> workloadList, int userId) {
   return Table(
       border: TableBorder.all(color: PdfColors.black),
       children: [
-        TableRow(children: [
+        if(singleWorkloadList.isNotEmpty)
+          TableRow(children: [
           Padding(padding: const EdgeInsets.only(left: 8, right: 8, top: 3), child: Text("1", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold), textAlign: TextAlign.center),),
-          Expanded(flex: 1, child: Padding(padding: const EdgeInsets.only(top: 3), child: Center( child: Text("${singleWorkloadList[0].userModel.userName}\n${singleWorkloadList[0].userModel.userDesignation}", style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold), textAlign: TextAlign.center),),),),
+          Expanded(flex: 1, child: Padding(padding: const EdgeInsets.only(top: 3), child: Center( child: Text("${singleWorkloadList.isNotEmpty ? singleWorkloadList[0].userModel.userName : ""}\n${singleWorkloadList.isNotEmpty ? singleWorkloadList[0].userModel.userDesignation : ""}", style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold), textAlign: TextAlign.center),),),),
           Expanded(flex: 4, child: Table(border: TableBorder.all(color: PdfColors.black), children: [
 
             if(singleDemandedWorkloadList.length > singleNotDemandedWorkloadList.length)

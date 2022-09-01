@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:university_management_system/models/class_model.dart';
@@ -10,6 +12,7 @@ import 'package:university_management_system/models/timeslots_model.dart';
 import 'package:university_management_system/models/user_model.dart';
 import 'package:university_management_system/models/workload_assignment_model.dart';
 
+import '../models/attendance_model.dart';
 import '../models/student_model.dart';
 import '../utilities/base/api_response.dart';
 import '../utilities/ip_configurations.dart';
@@ -428,18 +431,30 @@ class AppRepo{
         body: {
           "id": teacherModel.userModel.userId.toString(),
           "name": teacherModel.userModel.userName,
-          "password": teacherModel.userModel.userPassword,
-          "type": teacherModel.userModel.userType,
           "phone": teacherModel.userModel.userPhone,
           "gender": teacherModel.userModel.userGender,
-          "fcm_token": "",
-          "status": teacherModel.userModel.userStatus,
           "department_id": "${teacherModel.departmentModel.departmentId}",
           "qualification": teacherModel.userModel.userQualification,
           "designation": teacherModel.userModel.userDesignation,
-          "session": teacherModel.userModel.userSession,
-          "roll_no": teacherModel.userModel.userRollNo,
+          "type": teacherModel.userModel.userType,
+          "status": teacherModel.userModel.userStatus,
           "total_allowed_credit_hours": "${teacherModel.userModel.totalAllowedCreditHours}",
+          "address": teacherModel.userModel.userAddress,
+          "address": teacherModel.userModel.userAddress,
+        "userExaminationPassedMPhil": "M.Phil",
+        "mPhilPassedExamSubject": teacherModel.userModel.mPhilPassedExamSubject,
+        "mPhilPassedExamYear": teacherModel.userModel.mPhilPassedExamYear,
+        "mPhilPassedExamDivision": teacherModel.userModel.mPhilPassedExamDivision,
+        "mPhilPassedExamInstitute": teacherModel.userModel.mPhilPassedExamInstitute,
+        "userExaminationPassedPhd": "PhD",
+        "phdPassedExamSubject": teacherModel.userModel.phdPassedExamSubject,
+        "phdPassedExamYear": teacherModel.userModel.phdPassedExamYear,
+        "phdPassedExamDivision": teacherModel.userModel.phdPassedExamDivision,
+        "phdPassedExamInstitute": teacherModel.userModel.phdPassedExamInstitute,
+        "userSpecializedField": teacherModel.userModel.userSpecializedField,
+        "userGraduationLevelExperience": teacherModel.userModel.userGraduationLevelExperience,
+        "userPostGraduationLevelExperience": teacherModel.userModel.userPostGraduationLevelExperience,
+        "cnic_no": teacherModel.userModel.userCnic,
         });
     if(response.body.isNotEmpty){
       apiResponse = ApiResponse(response,null,null);
@@ -570,6 +585,48 @@ class AppRepo{
   Future<ApiResponse> deleteDateSheet(DatesheetModel model, String token)async{
     ApiResponse apiResponse;
     var response = await http.delete(Uri.parse(IPConfigurations.deleteDateSheetApi + "/${model.sheetId}"),
+        headers: {
+          'Authorization': 'Bearer $token',
+        });
+    if(response.body.isNotEmpty){
+      apiResponse = ApiResponse(response,null,null);
+      return apiResponse;
+    }else{
+      apiResponse = ApiResponse.withError("Error");
+      return apiResponse;
+    }
+  }
+//----------------------------------------------------------------------------//
+
+  /// Attendance Repo
+  Future<ApiResponse> addAttendance(AttendanceDetailModel model, String token)async{
+    var data1 = jsonEncode(model.presentUsers);
+    var data2 = jsonEncode(model.absentUsers);
+    ApiResponse apiResponse;
+    var response = await http.post(Uri.parse(IPConfigurations.addAttendanceApi),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+        body: {
+          "workloads_id": model.workloadId.toString(),
+          "present_students": data1,
+          "absent_students": data2,
+          "status": model.attendanceStatus.toString(),
+          "date": model.attendanceDate.toString(),
+          "time": model.attendanceTime.toString(),
+        });
+    if(response.body.isNotEmpty){
+      apiResponse = ApiResponse(response,null,null);
+      return apiResponse;
+    }else{
+      apiResponse = ApiResponse.withError("Error");
+      return apiResponse;
+    }
+  }
+
+  Future<ApiResponse> fetchAttendance(int workloadId, String token)async{
+    ApiResponse apiResponse;
+    var response = await http.get(Uri.parse("${IPConfigurations.fetchAttendanceApi}?workloads_id=$workloadId"),
         headers: {
           'Authorization': 'Bearer $token',
         });

@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:university_management_system/models/user_model.dart';
 import 'package:university_management_system/providers/auth_provider.dart';
+import 'package:university_management_system/ui/auth/login_page.dart';
 import 'package:university_management_system/utilities/constants.dart';
 import 'package:university_management_system/utilities/shared_preference_manager.dart';
 import '../../../assets/app_assets.dart';
@@ -302,9 +303,12 @@ class _UserProfileState extends State<UserProfile> {
                         progressBar = true;
                       });
                       print(authToken);
-                      Provider.of<AuthProvider>(context, listen: false).userLogout(authToken).then((value) {
-                        if(value.isSuccess){
+                      Provider.of<AuthProvider>(context, listen: false).userLogout(authToken).then((value) async {
+                        if(value.isSuccess)  {
                           MyMessage.showSuccessMessage(value.message, context);
+                          await Future.delayed(const Duration(milliseconds: 3000),(){});
+                          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                              LoginPage()), (Route<dynamic> route) => false);
                         }else{
                           MyMessage.showFailedMessage(value.message, context);
                         }

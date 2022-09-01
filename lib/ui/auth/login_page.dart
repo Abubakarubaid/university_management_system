@@ -2,9 +2,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:university_management_system/assets/app_assets.dart';
+import 'package:university_management_system/models/user_model.dart';
 import 'package:university_management_system/providers/auth_provider.dart';
+import 'package:university_management_system/ui/teacher/teacher_dashboard.dart';
 import 'package:university_management_system/utilities/base/my_message.dart';
 import 'package:university_management_system/widgets/progress_bar.dart';
+import '../../utilities/shared_preference_manager.dart';
 import '../../widgets/primary_button.dart';
 import '../../widgets/primary_text_field.dart';
 import '../admin/admin_dashboard.dart';
@@ -110,19 +113,27 @@ class _LoginPageState extends State<LoginPage> {
                               shadowColor: AppAssets.shadowColor,
                               buttonRadius: BorderRadius.circular(30),
                               onPress: () {
-                                //Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>const AdminDashboard()), (route) => false);
                                 if(emailController.text.isEmpty){
                                   MyMessage.showFailedMessage("Please Enter Email", context);
                                 }else if(passwordController.text.isEmpty){
                                   MyMessage.showFailedMessage("Password is missing", context);
                                 }else {
-                                  /*authProvider.userLogin(emailController.text, passwordController.text).then((value) {
+                                  authProvider.userLogin(emailController.text, passwordController.text).then((value) async {
                                     if(value.isSuccess){
                                       MyMessage.showSuccessMessage(value.message, context);
+                                      await SharedPreferenceManager.getInstance().getUser().then((value) {
+                                        if(value.userType == "admin"){
+                                          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                                              AdminDashboard()), (Route<dynamic> route) => false);
+                                        }else if(value.userType == "teacher"){
+                                          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                                              TeacherDashboard()), (Route<dynamic> route) => false);
+                                        }
+                                      });
                                     }else{
                                       MyMessage.showFailedMessage(value.message, context);
                                     }
-                                  });*/
+                                  });
                                 }
                               },
                             ),

@@ -8,7 +8,7 @@ class SharedPreferenceManager {
   String _phone="phone";
   String _gender="gender";
   String _image="image";
-  String _type="tyoe";
+  String _type="type";
   String _status="status";
   String _fcmToken = "fcmToken";
   String _authToken="token";

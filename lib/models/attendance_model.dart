@@ -8,13 +8,12 @@ class AttendanceDetailModel {
   int attendanceId = 0;
   List<UserModel> presentStudents = [];
   List<UserModel> absentStudents = [];
-  String attendanceDateAndTime = "";
+  List<String> presentUsers = [];
+  List<String> absentUsers = [];
+  String attendanceDate = "";
+  String attendanceTime = "";
   String attendanceStatus = "";
-
-  UserModel teacher = UserModel.getInstance();
-  ClassModel classModel = ClassModel.getInstance();
-  SubjectModel subjectModel = SubjectModel.getInstance();
-  DepartmentModel departmentModel = DepartmentModel.getInstance();
+  int workloadId = 0;
 
   AttendanceDetailModel.getInstance();
 
@@ -22,11 +21,11 @@ class AttendanceDetailModel {
     required this.attendanceId,
     required this.presentStudents,
     required this.absentStudents,
-    required this.attendanceDateAndTime,
+    required this.attendanceDate,
+    required this.attendanceTime,
     required this.attendanceStatus,
-    required this.teacher,
-    required this.classModel,
-    required this.subjectModel,
-    required this.departmentModel,
+    required this.workloadId,
+    required this.presentUsers,
+    required this.absentUsers,
   });
 }

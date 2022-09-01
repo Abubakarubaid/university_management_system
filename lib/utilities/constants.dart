@@ -45,6 +45,9 @@ class Constants{
   static const String DATESHEET_FETCH = "DATESHEET_FETCH: ";
   static const String DATESHEET_DELETE = "DATESHEET_DELETE: ";
 
+  static const String ATTENDANCE_ADD = "ATTENDANCE_ADD: ";
+  static const String ATTENDANCE_FETCH = "ATTENDANCE_FETCH: ";
+
   static void printMessage(String type, String message){
     print("$type$message");
   }

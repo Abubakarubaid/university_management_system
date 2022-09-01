@@ -15,6 +15,8 @@ class UserModel {
   String userType = "";
   String userStatus = "";
   int totalAllowedCreditHours = 0;
+  double overAllAttendancePercentage = 0.0;
+  String attendanceStatus = "";
 
   String userAddress = "";
   String userExaminationPassedMPhil = "";

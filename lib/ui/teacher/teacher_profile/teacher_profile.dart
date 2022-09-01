@@ -73,6 +73,8 @@ class _TeacherProfileState extends State<TeacherProfile> {
   ];
   String genderSelectedValue = "Select Gender";
 
+  String signatureText = "Add your Signature";
+
   ProfileImagePick _imagePick = ProfileImagePick(
     addButtonVisibility: true,
   );
@@ -117,7 +119,7 @@ class _TeacherProfileState extends State<TeacherProfile> {
       userSpecializedFieldController.text = model.userSpecializedField == "null" ? "" : model.userSpecializedField;
       userGraduationLevelExperienceController.text = model.userGraduationLevelExperience == "null" ? "" : model.userGraduationLevelExperience;
       userPostGraduationLevelExperienceController.text = model.userPostGraduationLevelExperience == "null" ? "" : model.userPostGraduationLevelExperience;
-      userSignatureController.text = model.userSignature == "null" ? "" : model.userSignature;
+      userSignatureController.text = model.userSignature == "null" ? signatureText="Add your Signature" : signatureText="Change Signature";
       userCNICController.text = model.userCnic == "null" ? "" : model.userCnic;
     });
     setState(() {});
