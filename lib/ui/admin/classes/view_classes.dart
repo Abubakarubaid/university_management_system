@@ -33,13 +33,15 @@ class _ViewClassesState extends State<ViewClasses> {
     "6th",
     "7th",
     "8th",
+    "9th",
+    "10th",
   ];
   String semesterSelectedValue = "Select Semester";
 
   var itemsType = [
     "Select Type",
-    "Regular",
-    "Self",
+    "Morning",
+    "Evening",
   ];
   String typeSelectedValue = "Select Type";
 

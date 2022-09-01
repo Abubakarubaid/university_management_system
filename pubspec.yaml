@@ -47,6 +47,9 @@ dependencies:
   modal_bottom_sheet: ^2.1.0
   signature: ^5.2.1
   pk_cnic_input_field: ^1.0.0
+  bottom_navy_bar: ^6.0.0
+  package_info_plus: ^1.4.2
+  launch_review: ^3.0.1
 
 
   # The following adds the Cupertino Icons font to your application.

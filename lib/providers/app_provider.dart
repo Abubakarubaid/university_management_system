@@ -40,11 +40,15 @@ class AppProvider with ChangeNotifier{
   List<RoomsModel> roomList = [];
   List<TimeSlotsModel> timeSlotList = [];
   List<StudentModel> studentList = [];
+  StudentModel studentUpdatedModel = StudentModel.getInstance();
+  TeacherModel teacherUpdatedModel = TeacherModel.getInstance();
   List<TeacherModel> teacherList = [];
   List<WorkloadAssignmentModel> workloadList = [];
   List<DatesheetModel> dateSheetList = [];
   SingleTeacherModel singleTeacherModel = SingleTeacherModel.getInstance();
   List<AttendanceCompleteModel> attendanceList = [];
+
+//----------------------------------------------------------------------------//
 
   /// Department Provider
   Future<ResponseModel> addDepartment(String departmentName, String departmentType, String token)async{
@@ -129,7 +133,7 @@ class AppProvider with ChangeNotifier{
     notifyListeners();
     return responseModel;
   }
-  //----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
   /// Subject Provider
   Future<ResponseModel> addSubject(SubjectModel subjectModel, String token)async{
@@ -230,7 +234,7 @@ class AppProvider with ChangeNotifier{
     notifyListeners();
     return responseModel;
   }
-  //----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
   /// Classes Provider
   Future<ResponseModel> fetchAllClasses(String token)async{
@@ -643,6 +647,7 @@ class AppProvider with ChangeNotifier{
     notifyListeners();
     ResponseModel responseModel;
 
+    studentUpdatedModel = StudentModel.getInstance();
     ApiResponse apiResponse = await appRepo.updateStudent(studentModel, token);
 
     var parsedResponse = json.decode(apiResponse.response!.body);
@@ -663,6 +668,8 @@ class AppProvider with ChangeNotifier{
       userModel.userImage = parsedResponse["data"]["user"]["image"].toString();
       userModel.userType = parsedResponse["data"]["user"]["type"].toString();
       userModel.userStatus = parsedResponse["data"]["user"]["status"].toString();
+      userModel.userAddress = parsedResponse["data"]["user"]["address"].toString();
+      userModel.userCnic = parsedResponse["data"]["user"]["cnic_no"].toString();
       userModel.userDepartment = parsedResponse["data"]["user_details"]["department_id"].toString();
       userModel.userSession = parsedResponse["data"]["user_details"]["session"].toString();
       userModel.userRollNo = parsedResponse["data"]["user_details"]["roll_no"].toString();
@@ -673,6 +680,8 @@ class AppProvider with ChangeNotifier{
       studentModel.userModel = userModel;
       studentModel.departmentModel = departmentModel;
       studentModel.classModel = classModel;
+
+      studentUpdatedModel = studentModel;
 
       studentList[studentList.indexWhere((element) => element.userModel.userId == studentModel.userModel.userId)] = studentModel;
 
@@ -721,26 +730,47 @@ class AppProvider with ChangeNotifier{
         userModel.userStatus = element["status"].toString();
         userModel.userAddress = element["address"].toString();
         userModel.userCnic = element["cnic_no"].toString();
-        userModel.userExaminationPassedMPhil = element["staff"]["userExaminationPassedMPhil"].toString();
-        userModel.mPhilPassedExamSubject = element["staff"]["mPhilPassedExamSubject"].toString();
-        userModel.mPhilPassedExamYear = element["staff"]["mPhilPassedExamYear"].toString();
-        userModel.mPhilPassedExamDivision = element["staff"]["mPhilPassedExamDivision"].toString();
-        userModel.mPhilPassedExamInstitute = element["staff"]["mPhilPassedExamInstitute"].toString();
-        userModel.userExaminationPassedPhd = element["staff"]["userExaminationPassedPhd"].toString();
-        userModel.phdPassedExamSubject = element["staff"]["phdPassedExamSubject"].toString();
-        userModel.phdPassedExamYear = element["staff"]["phdPassedExamYear"].toString();
-        userModel.phdPassedExamDivision = element["staff"]["phdPassedExamDivision"].toString();
-        userModel.phdPassedExamInstitute = element["staff"]["phdPassedExamInstitute"].toString();
-        userModel.userSpecializedField = element["staff"]["userSpecializedField"].toString();
-        userModel.userGraduationLevelExperience = element["staff"]["userGraduationLevelExperience"].toString();
-        userModel.userPostGraduationLevelExperience = element["staff"]["userPostGraduationLevelExperience"].toString();
-        userModel.userSignature = element["staff"]["Signature"].toString();
-        userModel.userDepartment = element["staff"]["department_id"].toString();
-        userModel.userQualification = element["staff"]["qualification"].toString();
-        userModel.userDesignation = element["staff"]["designation"].toString();
-        userModel.totalAllowedCreditHours = int.parse(element["staff"]["total_allowed_credit_hours"].toString());
-        userModel.userDesignation = element["staff"]["designation"].toString();
-        departmentModel = DepartmentModel.fromJson(element["staff"]["department"]);
+        if(element["staff"].toString() != "null") {
+          userModel.userExaminationPassedMPhil =
+              element["staff"]["userExaminationPassedMPhil"].toString();
+          userModel.mPhilPassedExamSubject =
+              element["staff"]["mPhilPassedExamSubject"].toString();
+          userModel.mPhilPassedExamYear =
+              element["staff"]["mPhilPassedExamYear"].toString();
+          userModel.mPhilPassedExamDivision =
+              element["staff"]["mPhilPassedExamDivision"].toString();
+          userModel.mPhilPassedExamInstitute =
+              element["staff"]["mPhilPassedExamInstitute"].toString();
+          userModel.userExaminationPassedPhd =
+              element["staff"]["userExaminationPassedPhd"].toString();
+          userModel.phdPassedExamSubject =
+              element["staff"]["phdPassedExamSubject"].toString();
+          userModel.phdPassedExamYear =
+              element["staff"]["phdPassedExamYear"].toString();
+          userModel.phdPassedExamDivision =
+              element["staff"]["phdPassedExamDivision"].toString();
+          userModel.phdPassedExamInstitute =
+              element["staff"]["phdPassedExamInstitute"].toString();
+          userModel.userSpecializedField =
+              element["staff"]["userSpecializedField"].toString();
+          userModel.userGraduationLevelExperience =
+              element["staff"]["userGraduationLevelExperience"].toString();
+          userModel.userPostGraduationLevelExperience =
+              element["staff"]["userPostGraduationLevelExperience"].toString();
+          userModel.userSignature = element["staff"]["Signature"].toString();
+          userModel.userDepartment =
+              element["staff"]["department_id"].toString();
+          userModel.userQualification =
+              element["staff"]["qualification"].toString();
+          userModel.userDesignation =
+              element["staff"]["designation"].toString();
+          userModel.totalAllowedCreditHours = int.parse(
+              element["staff"]["total_allowed_credit_hours"].toString());
+          userModel.userDesignation =
+              element["staff"]["designation"].toString();
+
+          departmentModel = DepartmentModel.fromJson(element["staff"]["department"]);
+        }
 
         List<WorkloadAssignmentModel> newWorkLoad = [];
         element["workloads"].forEach((workLoadElement) {
@@ -841,10 +871,11 @@ class AppProvider with ChangeNotifier{
     notifyListeners();
     ResponseModel responseModel;
 
+    teacherUpdatedModel = TeacherModel.getInstance();
     ApiResponse apiResponse = await appRepo.updateTeacher(teacherModel, token);
 
     var parsedResponse = json.decode(apiResponse.response!.body);
-    Constants.printMessage(Constants.STUDENT_UPDATE, parsedResponse.toString());
+    Constants.printMessage(Constants.TEACHER_UPDATE, parsedResponse.toString());
 
     if (apiResponse.response != null && parsedResponse["success"]) {
 
@@ -860,16 +891,97 @@ class AppProvider with ChangeNotifier{
       userModel.userImage = parsedResponse["data"]["user"]["image"].toString();
       userModel.userType = parsedResponse["data"]["user"]["type"].toString();
       userModel.userStatus = parsedResponse["data"]["user"]["status"].toString();
+      userModel.userCnic = parsedResponse["data"]["user"]["cnic_no"].toString();
+      userModel.userAddress = parsedResponse["data"]["user"]["address"].toString();
       userModel.userDepartment = parsedResponse["data"]["user_details"]["department_id"].toString();
-      userModel.userSession = parsedResponse["data"]["user_details"]["session"].toString();
-      userModel.userRollNo = parsedResponse["data"]["user_details"]["roll_no"].toString();
-      userModel.userClass = parsedResponse["data"]["user_details"]["class_id"].toString();
+      userModel.userQualification = parsedResponse["data"]["user_details"]["qualification"].toString();
+      userModel.userDesignation = parsedResponse["data"]["user_details"]["designation"].toString();
+      userModel.totalAllowedCreditHours = int.parse(parsedResponse["data"]["user_details"]["total_allowed_credit_hours"].toString());
+      userModel.userExaminationPassedMPhil = "M.Phil";
+      userModel.mPhilPassedExamSubject = parsedResponse["data"]["user_details"]["mPhilPassedExamSubject"].toString();
+      userModel.mPhilPassedExamYear = parsedResponse["data"]["user_details"]["mPhilPassedExamYear"].toString();
+      userModel.mPhilPassedExamDivision = parsedResponse["data"]["user_details"]["mPhilPassedExamDivision"].toString();
+      userModel.mPhilPassedExamInstitute = parsedResponse["data"]["user_details"]["mPhilPassedExamInstitute"].toString();
+      userModel.userExaminationPassedPhd = parsedResponse["data"]["user_details"]["userExaminationPassedPhd"].toString();
+      userModel.phdPassedExamSubject = parsedResponse["data"]["user_details"]["phdPassedExamSubject"].toString();
+      userModel.phdPassedExamYear = parsedResponse["data"]["user_details"]["phdPassedExamYear"].toString();
+      userModel.phdPassedExamDivision = parsedResponse["data"]["user_details"]["phdPassedExamDivision"].toString();
+      userModel.phdPassedExamInstitute = parsedResponse["data"]["user_details"]["phdPassedExamInstitute"].toString();
+      userModel.userSpecializedField = parsedResponse["data"]["user_details"]["userSpecializedField"].toString();
+      userModel.userGraduationLevelExperience = parsedResponse["data"]["user_details"]["userGraduationLevelExperience"].toString();
+      userModel.userPostGraduationLevelExperience = parsedResponse["data"]["user_details"]["userPostGraduationLevelExperience"].toString();
+      userModel.userSignature = parsedResponse["data"]["user_details"]["Signature"].toString();
       departmentModel = DepartmentModel.fromJson(parsedResponse["data"]["user_details"]["department"]);
 
       teacherModel.userModel = userModel;
       teacherModel.departmentModel = departmentModel;
 
       teacherList[teacherList.indexWhere((element) => element.userModel.userId == teacherModel.userModel.userId)] = teacherModel;
+
+      responseModel = ResponseModel(true, parsedResponse["message"]);
+      progress = false;
+    } else {
+      String errorMessage = parsedResponse["message"];
+      responseModel = ResponseModel(false, errorMessage);
+      progress = false;
+    }
+    notifyListeners();
+    return responseModel;
+  }
+
+  Future<ResponseModel> updateTeacherProfile(TeacherModel teacherModel, var signatureBytes, String token)async{
+    progress = true;
+    notifyListeners();
+    ResponseModel responseModel;
+
+    teacherUpdatedModel = TeacherModel.getInstance();
+    ApiResponse apiResponse = await appRepo.updateTeacherProfile(teacherModel, signatureBytes, token);
+
+    var parsedResponse = json.decode(apiResponse.response!.body);
+    Constants.printMessage(Constants.TEACHER_UPDATE, parsedResponse.toString());
+
+    if (apiResponse.response != null && parsedResponse["success"]) {
+
+      TeacherModel teacherModel = TeacherModel.getInstance();
+      UserModel userModel = UserModel.getInstance();
+      DepartmentModel departmentModel = DepartmentModel.getInstance();
+
+      userModel.userId = parsedResponse["data"]["user"]["id"];
+      userModel.userName = parsedResponse["data"]["user"]["name"].toString();
+      userModel.userEmail = parsedResponse["data"]["user"]["email"].toString();
+      userModel.userPhone = parsedResponse["data"]["user"]["phone"].toString();
+      userModel.userGender = parsedResponse["data"]["user"]["gender"].toString();
+      userModel.userImage = parsedResponse["data"]["user"]["image"].toString();
+      userModel.userType = parsedResponse["data"]["user"]["type"].toString();
+      userModel.userStatus = parsedResponse["data"]["user"]["status"].toString();
+      userModel.userCnic = parsedResponse["data"]["user"]["cnic_no"].toString();
+      userModel.userAddress = parsedResponse["data"]["user"]["address"].toString();
+      userModel.userDepartment = parsedResponse["data"]["user_details"]["department_id"].toString();
+      userModel.userQualification = parsedResponse["data"]["user_details"]["qualification"].toString();
+      userModel.userDesignation = parsedResponse["data"]["user_details"]["designation"].toString();
+      userModel.totalAllowedCreditHours = int.parse(parsedResponse["data"]["user_details"]["total_allowed_credit_hours"].toString());
+      userModel.userExaminationPassedMPhil = "M.Phil";
+      userModel.mPhilPassedExamSubject = parsedResponse["data"]["user_details"]["mPhilPassedExamSubject"].toString();
+      userModel.mPhilPassedExamYear = parsedResponse["data"]["user_details"]["mPhilPassedExamYear"].toString();
+      userModel.mPhilPassedExamDivision = parsedResponse["data"]["user_details"]["mPhilPassedExamDivision"].toString();
+      userModel.mPhilPassedExamInstitute = parsedResponse["data"]["user_details"]["mPhilPassedExamInstitute"].toString();
+      userModel.userExaminationPassedPhd = parsedResponse["data"]["user_details"]["userExaminationPassedPhd"].toString();
+      userModel.phdPassedExamSubject = parsedResponse["data"]["user_details"]["phdPassedExamSubject"].toString();
+      userModel.phdPassedExamYear = parsedResponse["data"]["user_details"]["phdPassedExamYear"].toString();
+      userModel.phdPassedExamDivision = parsedResponse["data"]["user_details"]["phdPassedExamDivision"].toString();
+      userModel.phdPassedExamInstitute = parsedResponse["data"]["user_details"]["phdPassedExamInstitute"].toString();
+      userModel.userSpecializedField = parsedResponse["data"]["user_details"]["userSpecializedField"].toString();
+      userModel.userGraduationLevelExperience = parsedResponse["data"]["user_details"]["userGraduationLevelExperience"].toString();
+      userModel.userPostGraduationLevelExperience = parsedResponse["data"]["user_details"]["userPostGraduationLevelExperience"].toString();
+      userModel.userSignature = parsedResponse["data"]["user_details"]["Signature"].toString();
+      departmentModel = DepartmentModel.fromJson(parsedResponse["data"]["user_details"]["department"]);
+
+      teacherModel.userModel = userModel;
+      teacherModel.departmentModel = departmentModel;
+
+      SharedPreferenceManager.getInstance().updateUser(userModel);
+
+      //teacherList[teacherList.indexWhere((element) => element.userModel.userId == teacherModel.userModel.userId)] = teacherModel;
 
       responseModel = ResponseModel(true, parsedResponse["message"]);
       progress = false;
@@ -1239,6 +1351,57 @@ class AppProvider with ChangeNotifier{
         datesheetModel.roomsModel = roomsModel;
 
         if(departmentModel.departmentId == model.departmentId) {
+          dateSheetList.add(datesheetModel);
+        }
+      });
+
+      responseModel = ResponseModel(true, parsedResponse["message"]);
+      datesheetProgress = false;
+    } else {
+      String errorMessage = parsedResponse["message"];
+      responseModel = ResponseModel(false, errorMessage);
+      datesheetProgress = false;
+    }
+    notifyListeners();
+    return responseModel;
+  }
+
+  Future<ResponseModel> fetchAllDateSheetsTeachers(String departmentId, String token)async{
+    datesheetProgress = true;
+    notifyListeners();
+    dateSheetList.clear();
+    ResponseModel responseModel;
+
+    ApiResponse apiResponse = await appRepo.fetchAllDateSheetsTeachers(departmentId, token);
+
+    var parsedResponse = json.decode(apiResponse.response!.body);
+    Constants.printMessage(Constants.DATESHEET_FETCH, parsedResponse.toString());
+
+    if (apiResponse.response != null && parsedResponse["success"]) {
+
+      parsedResponse["data"].forEach((element) {
+        DatesheetModel datesheetModel =  DatesheetModel.getInstance();
+        DepartmentModel departmentModel = DepartmentModel.getInstance();
+        ClassModel classModel = ClassModel.getInstance();
+        SubjectModel subjectModel = SubjectModel.getInstance();
+        RoomsModel roomsModel = RoomsModel.getInstance();
+
+        datesheetModel.sheetId = element["id"];
+        datesheetModel.sheetStatus = element["status"];
+        datesheetModel.sheetDate = element["date"];
+        datesheetModel.sheetStartTime = element["start_time"];
+        datesheetModel.sheetEndTime = element["end_time"];
+        departmentModel = DepartmentModel.fromJson(element["department"]);
+        classModel = ClassModel.fromJson(element["department_class"]);
+        subjectModel = SubjectModel.fromJson(element["subject"]);
+        roomsModel = RoomsModel.fromJson(element["room"]);
+
+        datesheetModel.departmentModel = departmentModel;
+        datesheetModel.subjectModel = subjectModel;
+        datesheetModel.classModel = classModel;
+        datesheetModel.roomsModel = roomsModel;
+
+        if(departmentModel.departmentId == int.parse(departmentId)) {
           dateSheetList.add(datesheetModel);
         }
       });

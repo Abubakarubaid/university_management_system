@@ -38,6 +38,7 @@ class AppAssets{
   static const String foldersIcon="assets/icons/folders.png";
   static const String folderIcon="assets/icons/folder.png";
   static const String loginIcon="assets/icons/login.png";
+  static const String resetPasswordIcon="assets/icons/reset_password.png";
   static const String attendanceColoredIcon="assets/icons/attendance_colored.png";
   static const String dateSheetColored="assets/icons/datesheet_illustration.png";
   static const String overloadIcon="assets/icons/overload.png";
@@ -50,6 +51,16 @@ class AppAssets{
   static const String femaleAvatar="assets/icons/female_avatar.svg";
   static const String backArrowIcon="assets/icons/back_arrow.svg";
   static const String progressDots="assets/media/progress_dots.json";
+  static const String department_new="assets/icons/department_new.png";
+  static const String subject_new="assets/icons/subject_new.png";
+  static const String students_new="assets/icons/students_new.png";
+  static const String teachers_new="assets/icons/teachers_new.png";
+  static const String classes_new="assets/icons/classes_new.png";
+  static const String workload_new="assets/icons/workload_new.png";
+  static const String room_new="assets/icons/room_new.png";
+  static const String timeslot_new="assets/icons/timeslot_new.png";
+  static const String datesheet_new="assets/icons/datesheet_new.png";
+  static const String timetable_new="assets/icons/timetable_new.png";
 
   /// Medias
   //static String demoMedia="assets/media/demo.mp4";

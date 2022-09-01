@@ -25,6 +25,7 @@ import '../../../widgets/primary_button.dart';
 import '../../../widgets/primary_dropdown_field.dart';
 import '../../../widgets/primary_text_field.dart';
 import '../../../widgets/profile_image_pick.dart';
+import '../../../widgets/progress_bar.dart';
 
 class TeacherProfileEdit extends StatefulWidget {
   TeacherModel teacherModel;
@@ -97,9 +98,15 @@ class _TeacherProfileEditState extends State<TeacherProfileEdit> {
   var data;
   UserModel userModel = UserModel.getInstance();
 
+  String authToken = "";
+
   @override
   void initState() {
     super.initState();
+
+    Constants.getAuthToken().then((value) {
+      authToken = value;
+    });
 
     getMyData();
     getDepartments();
@@ -537,81 +544,92 @@ class _TeacherProfileEditState extends State<TeacherProfileEdit> {
                           ),
                         ),
                         SizedBox(height: 30,),
-                        PrimaryButton(
-                          width: double.infinity,
-                          height: 60,
-                          buttonMargin: const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 30),
-                          buttonPadding: const EdgeInsets.all(12),
-                          buttonText: "Update Information",
-                          buttonTextStyle: AppAssets.latoBold_whiteColor_16,
-                          shadowColor: AppAssets.shadowColor,
-                          buttonRadius: BorderRadius.circular(30),
-                          onPress: () {
-                            if(nameController.text.isEmpty){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(emailController.text.isEmpty){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(phoneController.text.isEmpty){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(qualificationController.text.isEmpty){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(designationController.text.isEmpty){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(addressController.text.isEmpty){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(userSpecializedFieldController.text.isEmpty){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(genderSelectedValue == "Select Gender"){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(dptSelectedValue.departmentId == 0){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(imageData == null){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else {
-                              UserModel userModel = UserModel(
-                                  userId: widget.teacherModel.userModel.userId,
-                                  userName: nameController.text,
-                                  userEmail: widget.teacherModel.userModel.userEmail,
-                                  userPassword: "",
-                                  userPhone: phoneController.text,
-                                  userSession: "",
-                                  userRollNo: "",
-                                  userGender: genderSelectedValue,
-                                  userDepartment: dptSelectedValue.departmentId == 0 ? widget.teacherModel.departmentModel.departmentId.toString() : dptSelectedValue.departmentId.toString(),
-                                  userClass: "",
-                                  userQualification: qualificationController.text,
-                                  userDesignation: designationController.text,
-                                  userImage: "",
-                                  userType: "teacher",
-                                  userStatus: statusSelectedValue == "Select Status" ? widget.teacherModel.userModel.userStatus : statusSelectedValue == "Active" ? "active" : "in_active",
-                                  totalAllowedCreditHours: int.parse(userTotalAllowedCreditHours.text),
-                                  userAddress: addressController.text,
-                                  userExaminationPassedMPhil: "M.Phil",
-                                  mPhilPassedExamSubject: mPhilPassedExamSubjectController.text,
-                                  mPhilPassedExamYear: mPhilPassedExamYearController.text,
-                                  mPhilPassedExamDivision: mPhilPassedExamDivisionController.text,
-                                  mPhilPassedExamInstitute: mPhilPassedExamInstituteController.text,
-                                  userExaminationPassedPhd: "PhD",
-                                  phdPassedExamSubject: phdPassedExamSubjectController.text,
-                                  phdPassedExamYear: phdPassedExamYearController.text,
-                                  phdPassedExamDivision: phdPassedExamDivisionController.text,
-                                  phdPassedExamInstitute: phdPassedExamInstituteController.text,
-                                  userSpecializedField: userSpecializedFieldController.text,
-                                  userGraduationLevelExperience: userGraduationLevelExperienceController.text,
-                                  userPostGraduationLevelExperience: userPostGraduationLevelExperienceController.text,
-                                  userSignature: "userSignature",
-                                  userCnic: userCNICController.text.toString());
+                        Visibility(
+                          visible: !Provider.of<AppProvider>(context, listen: true).progress,
+                          child: PrimaryButton(
+                            width: double.infinity,
+                            height: 60,
+                            buttonMargin: const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 30),
+                            buttonPadding: const EdgeInsets.all(12),
+                            buttonText: "Update Information",
+                            buttonTextStyle: AppAssets.latoBold_whiteColor_16,
+                            shadowColor: AppAssets.shadowColor,
+                            buttonRadius: BorderRadius.circular(30),
+                            onPress: () {
+                              if(nameController.text.isEmpty){
+                                MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
+                              } else if(emailController.text.isEmpty){
+                                MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
+                              } else if(phoneController.text.isEmpty){
+                                MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
+                              } else if(qualificationController.text.isEmpty){
+                                MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
+                              } else if(designationController.text.isEmpty){
+                                MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
+                              } else if(addressController.text.isEmpty){
+                                MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
+                              } else if(userSpecializedFieldController.text.isEmpty){
+                                MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
+                              } else if(genderSelectedValue == "Select Gender"){
+                                MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
+                              } else if(dptSelectedValue.departmentId == 0){
+                                MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
+                              } else {
+                                UserModel userModel = UserModel(
+                                    userId: widget.teacherModel.userModel.userId,
+                                    userName: nameController.text,
+                                    userEmail: widget.teacherModel.userModel.userEmail,
+                                    userPassword: "",
+                                    userPhone: phoneController.text,
+                                    userSession: "",
+                                    userRollNo: "",
+                                    userGender: genderSelectedValue,
+                                    userDepartment: dptSelectedValue.departmentId == 0 ? widget.teacherModel.departmentModel.departmentId.toString() : dptSelectedValue.departmentId.toString(),
+                                    userClass: "",
+                                    userQualification: qualificationController.text,
+                                    userDesignation: designationController.text,
+                                    userImage: "",
+                                    userType: "teacher",
+                                    userStatus: statusSelectedValue == "Select Status" ? widget.teacherModel.userModel.userStatus : statusSelectedValue == "Active" ? "active" : "in_active",
+                                    totalAllowedCreditHours: int.parse(userTotalAllowedCreditHours.text),
+                                    userAddress: addressController.text,
+                                    userExaminationPassedMPhil: "M.Phil",
+                                    mPhilPassedExamSubject: mPhilPassedExamSubjectController.text,
+                                    mPhilPassedExamYear: mPhilPassedExamYearController.text,
+                                    mPhilPassedExamDivision: mPhilPassedExamDivisionController.text,
+                                    mPhilPassedExamInstitute: mPhilPassedExamInstituteController.text,
+                                    userExaminationPassedPhd: "PhD",
+                                    phdPassedExamSubject: phdPassedExamSubjectController.text,
+                                    phdPassedExamYear: phdPassedExamYearController.text,
+                                    phdPassedExamDivision: phdPassedExamDivisionController.text,
+                                    phdPassedExamInstitute: phdPassedExamInstituteController.text,
+                                    userSpecializedField: userSpecializedFieldController.text,
+                                    userGraduationLevelExperience: userGraduationLevelExperienceController.text,
+                                    userPostGraduationLevelExperience: userPostGraduationLevelExperienceController.text,
+                                    userSignature: "",
+                                    userCnic: userCNICController.text.toString());
 
-                              Provider.of<AuthProvider>(context, listen: false).teacherRegistration(userModel, imageData).then((value) {
-                                if(value.isSuccess){
-                                  MyMessage.showSuccessMessage(value.message, context);
-                                }else{
-                                  MyMessage.showFailedMessage(value.message, context);
-                                }
-                              });
-                            }
-                          },
+                                TeacherModel model = TeacherModel.getInstance();
+                                model.userModel = userModel;
+                                model.departmentModel = dptSelectedValue;
+
+                                Provider.of<AppProvider>(context, listen: false).updateTeacher(model, authToken).then((value) async {
+                                  if(value.isSuccess){
+                                    MyMessage.showSuccessMessage(value.message, context);
+                                    await Future.delayed(const Duration(milliseconds: 2000),(){});
+                                    Navigator.of(context).pop();
+                                  }else{
+                                    MyMessage.showFailedMessage(value.message, context);
+                                  }
+                                });
+                              }
+                            },
+                          ),
                         ),
+                        Visibility(
+                            visible: Provider.of<AppProvider>(context, listen: true).progress,
+                            child: const SizedBox(height: 80, child: ProgressBarWidget())),
+
                       ],
                     ),
                   ],

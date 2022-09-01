@@ -109,7 +109,7 @@ _tableRow(WorkloadAssignmentModel model) {
                 textAlign: TextAlign.center),),),
         Expanded(child: Padding(padding: const EdgeInsets.all(4),
           child: Text(
-              "${model.classModel.classType == "Regular" ? "Reg" : "Self"}",
+              "${model.classModel.classType == "Morning" ? "M" : "E"}",
               style: TextStyle(fontSize: 7, fontWeight: FontWeight.normal),
               textAlign: TextAlign.center),),),
         Expanded(flex: 3,

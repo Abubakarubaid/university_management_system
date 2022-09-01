@@ -16,6 +16,9 @@ import 'package:university_management_system/ui/admin/timetable/timetable_page.d
 import 'package:university_management_system/ui/admin/workload/workload_assignment.dart';
 import 'package:university_management_system/ui/profile/user_profile.dart';
 
+import '../../models/user_model.dart';
+import '../../utilities/shared_preference_manager.dart';
+import 'admin_profile.dart';
 import 'attendance/select_attendance.dart';
 import 'datesheet/datesheet_assignment.dart';
 
@@ -28,9 +31,18 @@ class AdminDashboard extends StatefulWidget {
 
 class _AdminDashboardState extends State<AdminDashboard> {
 
+  UserModel myData = UserModel.getInstance();
+
   @override
   void initState() {
     super.initState();
+  }
+
+  void getUserData() async {
+    SharedPreferenceManager.getInstance().getUser().then((value) {
+      myData = value;
+      setState(() {});
+    });
   }
 
   @override
@@ -50,7 +62,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     width: double.infinity,
                     margin: const EdgeInsets.only(top: 80, left: 20, right: 20),
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text("Hi Abu Bakar", style: AppAssets.latoBold_textLightColor_20,),
+                      Text("Hi ${myData.userName}", style: AppAssets.latoBold_textLightColor_20,),
                       const SizedBox(height: 6,),
                       Text("Manage your work", style: AppAssets.latoExtraBold_textDarkColor_22, maxLines: 1, overflow: TextOverflow.ellipsis,),
                     ],),
@@ -848,7 +860,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 Container(padding: const EdgeInsets.all(10), height: 50, width: 50, child: SvgPicture.asset(AppAssets.dashboardIcon, color: AppAssets.iconsTintDarkGreyColor,)),
                 Expanded(child: Container(padding: const EdgeInsets.only(left: 20, right: 20), child: Center(child: Text("Dashboard", style: AppAssets.latoBold_textDarkColor_20)))),
                 GestureDetector(onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const UserProfile()));
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AdminProfile()));
                 }, child: Container(padding: const EdgeInsets.all(10), height: 50, width: 50, child: SvgPicture.asset(AppAssets.profileIcon, color: AppAssets.iconsTintDarkGreyColor,))),
               ],),
             ),

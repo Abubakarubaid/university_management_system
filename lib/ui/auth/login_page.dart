@@ -11,7 +11,9 @@ import '../../utilities/shared_preference_manager.dart';
 import '../../widgets/primary_button.dart';
 import '../../widgets/primary_text_field.dart';
 import '../admin/admin_dashboard.dart';
-import '../auth/sign_up.dart';import 'forgotpassword.dart';
+import '../admin/dashboard.dart';
+import '../auth/sign_up.dart';import '../teacher/main_teacher_dashboard.dart';
+import 'forgotpassword.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -124,10 +126,10 @@ class _LoginPageState extends State<LoginPage> {
                                       await SharedPreferenceManager.getInstance().getUser().then((value) {
                                         if(value.userType == "admin"){
                                           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                                              AdminDashboard()), (Route<dynamic> route) => false);
+                                              Dashboard()), (Route<dynamic> route) => false);
                                         }else if(value.userType == "teacher"){
                                           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                                              TeacherDashboard()), (Route<dynamic> route) => false);
+                                              MainTeacherDashboard()), (Route<dynamic> route) => false);
                                         }
                                       });
                                     }else{

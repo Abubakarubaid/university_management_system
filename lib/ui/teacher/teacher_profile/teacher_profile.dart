@@ -18,12 +18,14 @@ import 'package:pk_cnic_input_field/pk_cnic_input_field.dart';
 import 'dart:ui' as ui;
 
 import '../../../models/dpt_model.dart';
+import '../../../models/teacher_model.dart';
 import '../../../providers/app_provider.dart';
 import '../../../utilities/constants.dart';
 import '../../../widgets/primary_button.dart';
 import '../../../widgets/primary_dropdown_field.dart';
 import '../../../widgets/primary_text_field.dart';
 import '../../../widgets/profile_image_pick.dart';
+import '../../../widgets/progress_bar.dart';
 
 class TeacherProfile extends StatefulWidget {
   const TeacherProfile({Key? key}) : super(key: key);
@@ -44,7 +46,6 @@ class _TeacherProfileState extends State<TeacherProfile> {
   TextEditingController nameController=TextEditingController();
   TextEditingController emailController=TextEditingController();
   TextEditingController phoneController=TextEditingController();
-  TextEditingController passwordController=TextEditingController();
   TextEditingController qualificationController=TextEditingController();
   TextEditingController designationController=TextEditingController();
   TextEditingController addressController=TextEditingController();
@@ -64,6 +65,7 @@ class _TeacherProfileState extends State<TeacherProfile> {
   TextEditingController userPostGraduationLevelExperienceController=TextEditingController();
   TextEditingController userSignatureController=TextEditingController();
   TextEditingController userCNICController=TextEditingController();
+  TextEditingController userTotalAllowedCreditHours=TextEditingController();
 
   var itemsGender = [
     "Select Gender",
@@ -72,6 +74,13 @@ class _TeacherProfileState extends State<TeacherProfile> {
     "Other",
   ];
   String genderSelectedValue = "Select Gender";
+
+  var itemsStatus = [
+    "Select Status",
+    "Active",
+    "Inactive",
+  ];
+  String statusSelectedValue = "Select Status";
 
   String signatureText = "Add your Signature";
 
@@ -87,40 +96,48 @@ class _TeacherProfileState extends State<TeacherProfile> {
   var imageSignature = null;
   var data;
   UserModel userModel = UserModel.getInstance();
+  UserModel tModel = UserModel.getInstance();
+
+  String authToken = "";
 
   @override
   void initState() {
     super.initState();
+
+    Constants.getAuthToken().then((value) {
+      authToken = value;
+    });
 
     getMyData();
     getDepartments();
   }
 
   void getMyData() async {
-    await SharedPreferenceManager.getInstance().getUser().then((model) {
-      nameController.text = model.userName == "null" ? "" : model.userName;
-      emailController.text = model.userEmail == "null" ? "" : model.userEmail;
-      phoneController.text = model.userPhone == "null" ? "" : model.userPhone;
-      passwordController.text = "";
-      qualificationController.text = model.userQualification == "null" ? "" : model.userQualification;
-      designationController.text = model.userDesignation == "null" ? "" : model.userDesignation;
-      addressController.text = model.userAddress == "null" ? "" : model.userAddress;
-      examPassedMPController.text = model.userExaminationPassedMPhil == "null" ? "" : model.userExaminationPassedMPhil;
-      userExaminationPassedMPhilController.text = model.userExaminationPassedMPhil == "null" ? "" : model.userExaminationPassedMPhil;
-      mPhilPassedExamSubjectController.text = model.userExaminationPassedMPhil == "null" ? "" : model.userExaminationPassedMPhil;
-      mPhilPassedExamYearController.text = model.mPhilPassedExamYear == "null" ? "" : model.mPhilPassedExamYear;
-      mPhilPassedExamDivisionController.text = model.mPhilPassedExamDivision == "null" ? "" : model.mPhilPassedExamDivision;
-      mPhilPassedExamInstituteController.text = model.mPhilPassedExamInstitute == "null" ? "" : model.mPhilPassedExamInstitute;
-      userExaminationPassedPhdController.text = model.userExaminationPassedPhd == "null" ? "" : model.userExaminationPassedPhd;
-      phdPassedExamSubjectController.text = model.phdPassedExamSubject == "null" ? "" : model.phdPassedExamSubject;
-      phdPassedExamYearController.text = model.phdPassedExamYear == "null" ? "" : model.phdPassedExamYear;
-      phdPassedExamDivisionController.text = model.phdPassedExamDivision == "null" ? "" : model.phdPassedExamDivision;
-      phdPassedExamInstituteController.text = model.phdPassedExamInstitute == "null" ? "" : model.phdPassedExamInstitute;
-      userSpecializedFieldController.text = model.userSpecializedField == "null" ? "" : model.userSpecializedField;
-      userGraduationLevelExperienceController.text = model.userGraduationLevelExperience == "null" ? "" : model.userGraduationLevelExperience;
-      userPostGraduationLevelExperienceController.text = model.userPostGraduationLevelExperience == "null" ? "" : model.userPostGraduationLevelExperience;
-      userSignatureController.text = model.userSignature == "null" ? signatureText="Add your Signature" : signatureText="Change Signature";
-      userCNICController.text = model.userCnic == "null" ? "" : model.userCnic;
+    await SharedPreferenceManager.getInstance().getUser().then((teacherModel) {
+      tModel = teacherModel;
+      nameController.text = teacherModel.userName == "null" ? "" : teacherModel.userName;
+      emailController.text = teacherModel.userEmail == "null" ? "" : teacherModel.userEmail;
+      phoneController.text = teacherModel.userPhone == "null" ? "" : teacherModel.userPhone;
+      qualificationController.text = teacherModel.userQualification == "null" ? "" : teacherModel.userQualification;
+      designationController.text = teacherModel.userDesignation == "null" ? "" : teacherModel.userDesignation;
+      addressController.text = teacherModel.userAddress == "null" ? "" : teacherModel.userAddress;
+      examPassedMPController.text = teacherModel.userExaminationPassedMPhil == "null" ? "" : teacherModel.userExaminationPassedMPhil;
+      userExaminationPassedMPhilController.text = teacherModel.userExaminationPassedMPhil == "null" ? "" : teacherModel.userExaminationPassedMPhil;
+      mPhilPassedExamSubjectController.text = teacherModel.mPhilPassedExamSubject == "null" ? "" : teacherModel.mPhilPassedExamSubject;
+      mPhilPassedExamYearController.text = teacherModel.mPhilPassedExamYear == "null" ? "" : teacherModel.mPhilPassedExamYear;
+      mPhilPassedExamDivisionController.text = teacherModel.mPhilPassedExamDivision == "null" ? "" : teacherModel.mPhilPassedExamDivision;
+      mPhilPassedExamInstituteController.text = teacherModel.mPhilPassedExamInstitute == "null" ? "" : teacherModel.mPhilPassedExamInstitute;
+      userExaminationPassedPhdController.text = teacherModel.userExaminationPassedPhd == "null" ? "" : teacherModel.userExaminationPassedPhd;
+      phdPassedExamSubjectController.text = teacherModel.phdPassedExamSubject == "null" ? "" : teacherModel.phdPassedExamSubject;
+      phdPassedExamYearController.text = teacherModel.phdPassedExamYear == "null" ? "" : teacherModel.phdPassedExamYear;
+      phdPassedExamDivisionController.text = teacherModel.phdPassedExamDivision == "null" ? "" : teacherModel.phdPassedExamDivision;
+      phdPassedExamInstituteController.text = teacherModel.phdPassedExamInstitute == "null" ? "" : teacherModel.phdPassedExamInstitute;
+      userSpecializedFieldController.text = teacherModel.userSpecializedField == "null" ? "" : teacherModel.userSpecializedField;
+      userGraduationLevelExperienceController.text = teacherModel.userGraduationLevelExperience == "null" ? "" : teacherModel.userGraduationLevelExperience;
+      userPostGraduationLevelExperienceController.text = teacherModel.userPostGraduationLevelExperience == "null" ? "" : teacherModel.userPostGraduationLevelExperience;
+      userSignatureController.text = teacherModel.userSignature == "null" ? signatureText="Add your Signature" : signatureText="Change Signature";
+      userCNICController.text = teacherModel.userCnic == "null" ? "" : teacherModel.userCnic;
+      userTotalAllowedCreditHours.text = teacherModel.totalAllowedCreditHours == 0 ? "0" : teacherModel.totalAllowedCreditHours.toString();
     });
     setState(() {});
   }
@@ -271,7 +288,7 @@ class _TeacherProfileState extends State<TeacherProfile> {
                       margin: const EdgeInsets.only(left: 22),
                       child: Align(
                           alignment: Alignment.topLeft,
-                          child: Text("My Profile",style: AppAssets.latoBold_primaryColor_30,)),
+                          child: Text("Profile",style: AppAssets.latoBold_primaryColor_30,)),
                     ),
                     const SizedBox(height: 30,),
                     _imagePick,
@@ -347,20 +364,6 @@ class _TeacherProfileState extends State<TeacherProfile> {
                         Container(
                           margin: EdgeInsets.only(left: 20,right: 20),
                           child: PrimaryTextFiled(controller: phoneController,onChange: (value){},hint: "Enter Namw",keyboardType: TextInputType.text,),
-                        ),
-                        SizedBox(height: 20,),
-                        Container(
-                          margin: EdgeInsets.only(left: 22),
-                          child: Align(
-                              alignment: Alignment.topLeft,
-                              child: Text("Password",style: AppAssets.latoBold_textCustomColor_16,)),
-                        ),
-                        SizedBox(height: 6,),
-                        Container(
-                          margin: EdgeInsets.only(left: 20,right: 20),
-                          child: PrimaryTextFiled(controller: passwordController,onChange: (value){},hint: "Enter Password",keyboardType: TextInputType.text,
-
-                          ),
                         ),
                         SizedBox(height: 20,),
                         Container(
@@ -511,7 +514,19 @@ class _TeacherProfileState extends State<TeacherProfile> {
                           margin: EdgeInsets.only(left: 22),
                           child: Align(
                               alignment: Alignment.topLeft,
-                              child: Text("Gender",style: AppAssets.latoBold_textCustomColor_16,)),
+                              child: Text("Total Allowed Credit Hours",style: AppAssets.latoBold_textCustomColor_16,)),
+                        ),
+                        SizedBox(height: 6,),
+                        Container(
+                          margin: EdgeInsets.only(left: 20,right: 20),
+                          child: PrimaryTextFiled(controller: userTotalAllowedCreditHours,onChange: (value){},hint: "Total Allowed Credit Hours",keyboardType: TextInputType.text,),
+                        ),
+                        SizedBox(height: 20,),
+                        Container(
+                          margin: EdgeInsets.only(left: 22),
+                          child: Align(
+                              alignment: Alignment.topLeft,
+                              child: Text("Gender: (${tModel.userGender})",style: AppAssets.latoBold_textCustomColor_16,)),
                         ),
                         SizedBox(height: 6,),
                         Container(
@@ -532,51 +547,7 @@ class _TeacherProfileState extends State<TeacherProfile> {
                           margin: EdgeInsets.only(left: 22),
                           child: Align(
                               alignment: Alignment.topLeft,
-                              child: Text("Department",style: AppAssets.latoBold_textCustomColor_16,)),
-                        ),
-                        SizedBox(height: 6,),
-                        Container(
-                          margin: EdgeInsets.only(left: 20,right: 20),
-                          child: Container(
-                            width: double.infinity,
-                            height: 50,
-                            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: AppAssets.whiteColor,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: AppAssets.textLightColor, width: 1),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppAssets.shadowColor.withOpacity(0.5),
-                                  spreadRadius: 4,
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 6),
-                                )],
-                            ),
-                            child: DropdownButton<DepartmentModel>(
-                              value: dptSelectedValue,
-                              icon: const Icon(Icons.arrow_drop_down),
-                              underline: Container(
-                                height: 0,
-                                color: Colors.transparent,
-                              ),
-                              isExpanded: true,
-                              onChanged: (value) {
-                                setState(() {
-                                  dptSelectedValue = value!;
-                                });
-                              },
-                              items: items,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 20,),
-                        Container(
-                          margin: EdgeInsets.only(left: 22),
-                          child: Align(
-                              alignment: Alignment.topLeft,
-                              child: Text("CNIC",style: AppAssets.latoBold_textCustomColor_16,)),
+                              child: Text("CNIC (${tModel.userCnic})", style: AppAssets.latoBold_textCustomColor_16,)),
                         ),
                         SizedBox(height: 6,),
                         Container(
@@ -646,106 +617,90 @@ class _TeacherProfileState extends State<TeacherProfile> {
                           ],),
                         ),
                         SizedBox(height: 30,),
-                        PrimaryButton(
-                          width: double.infinity,
-                          height: 60,
-                          buttonMargin: const EdgeInsets.only(top: 20, left: 20, right: 20),
-                          buttonPadding: const EdgeInsets.all(12),
-                          buttonText: "Update Information",
-                          buttonTextStyle: AppAssets.latoBold_whiteColor_16,
-                          shadowColor: AppAssets.shadowColor,
-                          buttonRadius: BorderRadius.circular(30),
-                          onPress: () {
-                            if(nameController.text.isEmpty){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(emailController.text.isEmpty){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(phoneController.text.isEmpty){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(passwordController.text.isEmpty){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(passwordController.text.length < 6){
-                              MyMessage.showFailedMessage("Weak Password, Password length should greater then 6 characters", context);
-                            } else if(qualificationController.text.isEmpty){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(designationController.text.isEmpty){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(addressController.text.isEmpty){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(userSpecializedFieldController.text.isEmpty){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(genderSelectedValue == "Select Gender"){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(dptSelectedValue.departmentId == 0){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else if(imageData == null){
-                              MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
-                            } else {
-                              UserModel userModel = UserModel(
-                                  userId: 0,
-                                  userName: nameController.text,
-                                  userEmail: emailController.text,
-                                  userPassword: passwordController.text,
-                                  userPhone: phoneController.text,
-                                  userSession: "",
-                                  userRollNo: "",
-                                  userGender: genderSelectedValue,
-                                  userDepartment: dptSelectedValue.departmentId.toString(),
-                                  userClass: "",
-                                  userQualification: qualificationController.text,
-                                  userDesignation: designationController.text,
-                                  userImage: "",
-                                  userType: "teacher",
-                                  userStatus: "in_active",
-                                  totalAllowedCreditHours: 0,
-                                  userAddress: addressController.text,
-                                  userExaminationPassedMPhil: "M.Phil",
-                                  mPhilPassedExamSubject: mPhilPassedExamSubjectController.text,
-                                  mPhilPassedExamYear: mPhilPassedExamYearController.text,
-                                  mPhilPassedExamDivision: mPhilPassedExamDivisionController.text,
-                                  mPhilPassedExamInstitute: mPhilPassedExamInstituteController.text,
-                                  userExaminationPassedPhd: "PhD",
-                                  phdPassedExamSubject: phdPassedExamSubjectController.text,
-                                  phdPassedExamYear: phdPassedExamYearController.text,
-                                  phdPassedExamDivision: phdPassedExamDivisionController.text,
-                                  phdPassedExamInstitute: phdPassedExamInstituteController.text,
-                                  userSpecializedField: userSpecializedFieldController.text,
-                                  userGraduationLevelExperience: userGraduationLevelExperienceController.text,
-                                  userPostGraduationLevelExperience: userPostGraduationLevelExperienceController.text,
-                                  userSignature: "userSignature",
-                                  userCnic: userCNICController.text.toString());
+                        Visibility(
+                          visible: !Provider.of<AppProvider>(context, listen: true).progress,
+                          child: PrimaryButton(
+                            width: double.infinity,
+                            height: 60,
+                            buttonMargin: const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 30),
+                            buttonPadding: const EdgeInsets.all(12),
+                            buttonText: "Update Information",
+                            buttonTextStyle: AppAssets.latoBold_whiteColor_16,
+                            shadowColor: AppAssets.shadowColor,
+                            buttonRadius: BorderRadius.circular(30),
+                            onPress: () {
+                              if(nameController.text.isEmpty){
+                                MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
+                              } else if(emailController.text.isEmpty){
+                                MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
+                              } else if(phoneController.text.isEmpty){
+                                MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
+                              } else if(qualificationController.text.isEmpty){
+                                MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
+                              } else if(designationController.text.isEmpty){
+                                MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
+                              } else if(addressController.text.isEmpty){
+                                MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
+                              } else if(userSpecializedFieldController.text.isEmpty){
+                                MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
+                              } else if(genderSelectedValue == "Select Gender"){
+                                MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
+                              } else if(userCNICController.text.isEmpty){
+                                MyMessage.showFailedMessage("Incomplete Data, PLease fill all your details", context);
+                              } else {
+                                UserModel userModel = UserModel(
+                                    userId: tModel.userId,
+                                    userName: nameController.text,
+                                    userEmail: tModel.userEmail,
+                                    userPassword: "",
+                                    userPhone: phoneController.text,
+                                    userSession: "",
+                                    userRollNo: "",
+                                    userGender: genderSelectedValue,
+                                    userDepartment: tModel.userDepartment.toString(),
+                                    userClass: tModel.userClass.toString(),
+                                    userQualification: qualificationController.text,
+                                    userDesignation: designationController.text,
+                                    userImage: _imagePick.getUri().toString(),
+                                    userType: "teacher",
+                                    userStatus: tModel.userStatus,
+                                    totalAllowedCreditHours: int.parse(userTotalAllowedCreditHours.text),
+                                    userAddress: addressController.text,
+                                    userExaminationPassedMPhil: "M.Phil",
+                                    mPhilPassedExamSubject: mPhilPassedExamSubjectController.text,
+                                    mPhilPassedExamYear: mPhilPassedExamYearController.text,
+                                    mPhilPassedExamDivision: mPhilPassedExamDivisionController.text,
+                                    mPhilPassedExamInstitute: mPhilPassedExamInstituteController.text,
+                                    userExaminationPassedPhd: "PhD",
+                                    phdPassedExamSubject: phdPassedExamSubjectController.text,
+                                    phdPassedExamYear: phdPassedExamYearController.text,
+                                    phdPassedExamDivision: phdPassedExamDivisionController.text,
+                                    phdPassedExamInstitute: phdPassedExamInstituteController.text,
+                                    userSpecializedField: userSpecializedFieldController.text,
+                                    userGraduationLevelExperience: userGraduationLevelExperienceController.text,
+                                    userPostGraduationLevelExperience: userPostGraduationLevelExperienceController.text,
+                                    userSignature: "",
+                                    userCnic: userCNICController.text.toString());
+                                // imageData == null
+                                TeacherModel model = TeacherModel.getInstance();
+                                model.userModel = userModel;
 
-                              Provider.of<AuthProvider>(context, listen: false).teacherRegistration(userModel, imageData).then((value) {
-                                if(value.isSuccess){
-                                  MyMessage.showSuccessMessage(value.message, context);
-                                }else{
-                                  MyMessage.showFailedMessage(value.message, context);
-                                }
-                              });
-                            }
-                          },
-                        ),
-                        Container(
-                          alignment: Alignment.center,
-                          margin: EdgeInsets.fromLTRB(10,30,10,30),
-                          //child: Text('Don\'t have an account? Create'),
-                          child: Text.rich(
-                              TextSpan(
-                                  children: [
-                                    TextSpan(text: "If You have an account?   "),
-                                    TextSpan(
-                                      text: 'Sign In',
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = (){
-                                          // Navigator.push(context, MaterialPageRoute(builder: (context) => RegistrationPage()));
-                                          Navigator.pop(context);
-                                        },
-                                      style: AppAssets.latoBold_primaryColor_16,
-                                    ),
-                                  ]
-                              )
+                                Provider.of<AppProvider>(context, listen: false).updateTeacherProfile(model, imageData, authToken).then((value) async {
+                                  if(value.isSuccess){
+                                    MyMessage.showSuccessMessage(value.message, context);
+                                    await Future.delayed(const Duration(milliseconds: 2000),(){});
+                                    Navigator.of(context).pop();
+                                  }else{
+                                    MyMessage.showFailedMessage(value.message, context);
+                                  }
+                                });
+                              }
+                            },
                           ),
                         ),
+                        Visibility(
+                            visible: Provider.of<AppProvider>(context, listen: true).progress,
+                            child: const SizedBox(height: 80, child: ProgressBarWidget())),
 
                       ],
                     ),

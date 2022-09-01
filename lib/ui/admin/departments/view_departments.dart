@@ -25,8 +25,8 @@ class _ViewDepartmentsState extends State<ViewDepartments> {
 
   var itemsType = [
     "Select Type",
-    "Inner",
-    "Outer",
+    "Own",
+    "Other",
   ];
   String typeSelectedValue = "Select Type";
 

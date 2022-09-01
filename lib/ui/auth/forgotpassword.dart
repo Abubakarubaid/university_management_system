@@ -35,7 +35,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset("assets/icons/forgot-password.png",width: 200,height: 200,),
+                        Image.asset(AppAssets.resetPasswordIcon,width: 150,height: 150,),
                       ],
                     ),
                   ),

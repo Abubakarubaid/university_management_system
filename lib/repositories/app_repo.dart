@@ -19,7 +19,8 @@ import '../utilities/ip_configurations.dart';
 
 class AppRepo{
 
-  //----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+
   /// Departments Repo
   Future<ApiResponse> addDepartment(String departmentName, String departmentType, String token)async{
     ApiResponse apiResponse;
@@ -132,7 +133,7 @@ class AppRepo{
       return apiResponse;
     }
   }
-  //---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
   /// Classes Repo
   Future<ApiResponse> fetchAllClasses(String token)async{
@@ -334,6 +335,9 @@ class AppRepo{
           "type": studentModel.userModel.userType,
           "phone": studentModel.userModel.userPhone,
           "gender": studentModel.userModel.userGender,
+          "cnic_no": studentModel.userModel.userCnic,
+          "address": studentModel.userModel.userAddress,
+          "gender": studentModel.userModel.userGender,
           "fcm_token": "",
           "status": studentModel.userModel.userStatus,
           "department_id": "${studentModel.departmentModel.departmentId}",
@@ -365,8 +369,10 @@ class AppRepo{
           "password": studentModel.userModel.userPassword,
           "type": studentModel.userModel.userType,
           "phone": studentModel.userModel.userPhone,
-          "gender": studentModel.userModel.userGender,
+          "gender": studentModel.userModel.userGender == "Male" ? "male" : studentModel.userModel.userGender == "Female" ? "female" : "other",
           "fcm_token": "",
+          "cnic_no": studentModel.userModel.userCnic,
+          "address": studentModel.userModel.userAddress,
           "status": studentModel.userModel.userStatus,
           "department_id": "${studentModel.departmentModel.departmentId}",
           "qualification": studentModel.userModel.userQualification,
@@ -432,7 +438,7 @@ class AppRepo{
           "id": teacherModel.userModel.userId.toString(),
           "name": teacherModel.userModel.userName,
           "phone": teacherModel.userModel.userPhone,
-          "gender": teacherModel.userModel.userGender,
+          "gender": teacherModel.userModel.userGender == "Male" ? "male" : teacherModel.userModel.userGender == "Female" ? "female" : "other",
           "department_id": "${teacherModel.departmentModel.departmentId}",
           "qualification": teacherModel.userModel.userQualification,
           "designation": teacherModel.userModel.userDesignation,
@@ -440,21 +446,20 @@ class AppRepo{
           "status": teacherModel.userModel.userStatus,
           "total_allowed_credit_hours": "${teacherModel.userModel.totalAllowedCreditHours}",
           "address": teacherModel.userModel.userAddress,
-          "address": teacherModel.userModel.userAddress,
-        "userExaminationPassedMPhil": "M.Phil",
-        "mPhilPassedExamSubject": teacherModel.userModel.mPhilPassedExamSubject,
-        "mPhilPassedExamYear": teacherModel.userModel.mPhilPassedExamYear,
-        "mPhilPassedExamDivision": teacherModel.userModel.mPhilPassedExamDivision,
-        "mPhilPassedExamInstitute": teacherModel.userModel.mPhilPassedExamInstitute,
-        "userExaminationPassedPhd": "PhD",
-        "phdPassedExamSubject": teacherModel.userModel.phdPassedExamSubject,
-        "phdPassedExamYear": teacherModel.userModel.phdPassedExamYear,
-        "phdPassedExamDivision": teacherModel.userModel.phdPassedExamDivision,
-        "phdPassedExamInstitute": teacherModel.userModel.phdPassedExamInstitute,
-        "userSpecializedField": teacherModel.userModel.userSpecializedField,
-        "userGraduationLevelExperience": teacherModel.userModel.userGraduationLevelExperience,
-        "userPostGraduationLevelExperience": teacherModel.userModel.userPostGraduationLevelExperience,
-        "cnic_no": teacherModel.userModel.userCnic,
+          "userExaminationPassedMPhil": "M.Phil",
+          "mPhilPassedExamSubject": teacherModel.userModel.mPhilPassedExamSubject,
+          "mPhilPassedExamYear": teacherModel.userModel.mPhilPassedExamYear,
+          "mPhilPassedExamDivision": teacherModel.userModel.mPhilPassedExamDivision,
+          "mPhilPassedExamInstitute": teacherModel.userModel.mPhilPassedExamInstitute,
+          "userExaminationPassedPhd": "PhD",
+          "phdPassedExamSubject": teacherModel.userModel.phdPassedExamSubject,
+          "phdPassedExamYear": teacherModel.userModel.phdPassedExamYear,
+          "phdPassedExamDivision": teacherModel.userModel.phdPassedExamDivision,
+          "phdPassedExamInstitute": teacherModel.userModel.phdPassedExamInstitute,
+          "userSpecializedField": teacherModel.userModel.userSpecializedField,
+          "userGraduationLevelExperience": teacherModel.userModel.userGraduationLevelExperience,
+          "userPostGraduationLevelExperience": teacherModel.userModel.userPostGraduationLevelExperience,
+          "cnic_no": teacherModel.userModel.userCnic,
         });
     if(response.body.isNotEmpty){
       apiResponse = ApiResponse(response,null,null);
@@ -463,6 +468,59 @@ class AppRepo{
       apiResponse = ApiResponse.withError("Error");
       return apiResponse;
     }
+  }
+
+  Future<ApiResponse> updateTeacherProfile(TeacherModel registrationModel, var signatureBytes, String token) async{
+    ApiResponse apiResponse;
+
+    var request = http.MultipartRequest("POST", Uri.parse(IPConfigurations.updateTeacherApi));
+
+    request.fields['id'] = registrationModel.userModel.userId.toString();
+    request.fields['password'] = "123456789";
+    request.fields['name'] = registrationModel.userModel.userName;
+    request.fields['email'] = registrationModel.userModel.userEmail;
+    request.fields['type'] = registrationModel.userModel.userType;
+    request.fields['phone'] = registrationModel.userModel.userPhone;
+    request.fields['gender'] = registrationModel.userModel.userGender == "Male" ? "male" : registrationModel.userModel.userGender == "Female" ? "female" : "others";
+    request.fields['fcm_token'] = "";
+    request.fields['status'] = registrationModel.userModel.userStatus;
+    request.fields['department_id'] = registrationModel.userModel.userDepartment;
+    request.fields['qualification'] = registrationModel.userModel.userQualification;
+    request.fields['designation'] = registrationModel.userModel.userDesignation;
+    request.fields['total_allowed_credit_hours'] = registrationModel.userModel.totalAllowedCreditHours.toString();
+    request.fields['address'] = registrationModel.userModel.userAddress;
+    request.fields['cnic_no'] = registrationModel.userModel.userCnic;
+    request.fields['userExaminationPassedMPhil'] = registrationModel.userModel.userExaminationPassedMPhil;
+    request.fields['mPhilPassedExamSubject'] = registrationModel.userModel.mPhilPassedExamSubject;
+    request.fields['mPhilPassedExamYear'] = registrationModel.userModel.mPhilPassedExamYear;
+    request.fields['mPhilPassedExamDivision'] = registrationModel.userModel.mPhilPassedExamDivision;
+    request.fields['mPhilPassedExamInstitute'] = registrationModel.userModel.mPhilPassedExamInstitute;
+    request.fields['userExaminationPassedPhd'] = registrationModel.userModel.userExaminationPassedPhd;
+    request.fields['phdPassedExamSubject'] = registrationModel.userModel.phdPassedExamSubject;
+    request.fields['phdPassedExamYear'] = registrationModel.userModel.phdPassedExamYear;
+    request.fields['phdPassedExamDivision'] = registrationModel.userModel.phdPassedExamDivision;
+    request.fields['phdPassedExamInstitute'] = registrationModel.userModel.phdPassedExamInstitute;
+    request.fields['userSpecializedField'] = registrationModel.userModel.userSpecializedField;
+    request.fields['userGraduationLevelExperience'] = registrationModel.userModel.userGraduationLevelExperience;
+    request.fields['userPostGraduationLevelExperience'] = registrationModel.userModel.userPostGraduationLevelExperience;
+
+    if(registrationModel.userModel.userImage.isNotEmpty) {
+      request.files.add(await http.MultipartFile.fromPath("image", registrationModel.userModel.userImage,));
+    }
+
+    if(signatureBytes != null){
+      request.files.add(http.MultipartFile.fromBytes('Signature', signatureBytes, filename: 'myImage.png'));
+    }
+
+    var response = await request.send();
+    if(response!=null){
+      apiResponse = ApiResponse(await http.Response.fromStream(response), response ,null);
+      return apiResponse;
+    }else{
+      apiResponse = ApiResponse.withError("Error");
+      return apiResponse;
+    }
+
   }
 
   Future<ApiResponse> fetchSpecificTeacher(String type, int userId, String token)async{
@@ -568,6 +626,21 @@ class AppRepo{
   }
 
   Future<ApiResponse> fetchAllDateSheets(DepartmentModel model, String token)async{
+    ApiResponse apiResponse;
+    var response = await http.get(Uri.parse(IPConfigurations.fetchDateSheetApi),
+        headers: {
+          'Authorization': 'Bearer $token',
+        });
+    if(response.body.isNotEmpty){
+      apiResponse = ApiResponse(response,null,null);
+      return apiResponse;
+    }else{
+      apiResponse = ApiResponse.withError("Error");
+      return apiResponse;
+    }
+  }
+
+  Future<ApiResponse> fetchAllDateSheetsTeachers(String departmentId, String token)async{
     ApiResponse apiResponse;
     var response = await http.get(Uri.parse(IPConfigurations.fetchDateSheetApi),
         headers: {

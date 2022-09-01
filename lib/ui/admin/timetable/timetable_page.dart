@@ -21,7 +21,7 @@ import 'dart:io';
 import 'package:flutter/services.dart' show rootBundle;
 
 class TimeTablePage extends StatefulWidget {
-  TimeTablePage({Key? key}) : super(key: key);
+  const TimeTablePage({Key? key}) : super(key: key);
 
   @override
   State<TimeTablePage> createState() => _TimeTablePageState();
@@ -133,42 +133,53 @@ class _TimeTablePageState extends State<TimeTablePage> {
               margin: const EdgeInsets.only(top: 60, left: 20, right: 20),
               child: Column(
                 children: [
-                  Container(
-                    width: double.infinity,
-                    height: 50,
-                    margin: const EdgeInsets.only(top: 20),
-                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: AppAssets.whiteColor,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppAssets.textLightColor, width: 1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppAssets.shadowColor.withOpacity(0.5),
-                          spreadRadius: 4,
-                          blurRadius: 8,
-                          offset: const Offset(0, 6),
-                        )],
-                    ),
-                    child: DropdownButton<DepartmentModel>(
-                      value: dptSelectedValue,
-                      icon: const Icon(Icons.arrow_drop_down),
-                      underline: Container(
-                        height: 0,
-                        color: Colors.transparent,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          width: double.infinity,
+                          height: 50,
+                          margin: const EdgeInsets.only(top: 20),
+                          padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: AppAssets.whiteColor,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: AppAssets.textLightColor, width: 1),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppAssets.shadowColor.withOpacity(0.5),
+                                spreadRadius: 4,
+                                blurRadius: 8,
+                                offset: const Offset(0, 6),
+                              )],
+                          ),
+                          child: DropdownButton<DepartmentModel>(
+                            value: dptSelectedValue,
+                            icon: const Icon(Icons.arrow_drop_down),
+                            underline: Container(
+                              height: 0,
+                              color: Colors.transparent,
+                            ),
+                            isExpanded: true,
+                            onChanged: (value) {
+                              setState(() {
+                                dptSelectedValue = value!;
+                                if(dptSelectedValue.departmentId != 0){
+                                  getTeachers();
+                                }
+                              });
+                            },
+                            items: departmentItems,
+                          ),
+                        ),
                       ),
-                      isExpanded: true,
-                      onChanged: (value) {
-                        setState(() {
-                          dptSelectedValue = value!;
-                          if(dptSelectedValue.departmentId != 0){
-                            getTeachers();
-                          }
-                        });
-                      },
-                      items: departmentItems,
-                    ),
+                      GestureDetector(
+                          onTap: () async {
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => TimeTablePdfPreviewPage(workloadList: appProvider.workloadList, teachersList: appProvider.teacherList, roomsList: appProvider.roomList, slotsList: appProvider.timeSlotList,)));
+                          },
+                          child: Container(alignment: Alignment.center, padding: const EdgeInsets.all(10), margin: const EdgeInsets.only(top: 20), height: 50, width: 50, child: Center(child: Icon(Icons.picture_as_pdf, color: Colors.blue,)))),
+                    ],
                   ),
                   Expanded(
                     child: appProvider.progress ?
@@ -260,7 +271,7 @@ class _TimeTablePageState extends State<TimeTablePage> {
                 ],
               ),
             ),
-            Container(
+            /*Container(
               width: double.infinity,
               height: 60,
               padding: const EdgeInsets.only(left: 0, right: 10),
@@ -283,7 +294,7 @@ class _TimeTablePageState extends State<TimeTablePage> {
                     },
                     child: Container(padding: const EdgeInsets.all(10), height: 50, width: 50, child: Icon(Icons.picture_as_pdf, color: Colors.blue,))),
               ],),
-            ),
+            ),*/
           ]),
         ),),
       ),

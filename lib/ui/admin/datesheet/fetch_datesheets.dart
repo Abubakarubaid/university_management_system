@@ -35,6 +35,7 @@ class _FetchDatesheetsState extends State<FetchDatesheets> {
   var teacherItems;
 
   String authToken = "";
+  List<DatesheetModel> searchList = [];
 
   @override
   void initState() {
@@ -124,7 +125,7 @@ class _FetchDatesheetsState extends State<FetchDatesheets> {
                         controller: searchController,
                         hint: "Search here",
                         keyboardType: TextInputType.text,
-                        onChange: (text) {}
+                        onChange: onTextChanged
                     ),
                   ),
                   Expanded(
@@ -132,6 +133,7 @@ class _FetchDatesheetsState extends State<FetchDatesheets> {
                     const Center(child: SizedBox(height: 80, child: ProgressBarWidget(),)) :
                     appProvider.dateSheetList.isEmpty ?
                     const NoDataFound() :
+                    searchList.isEmpty ?
                     ListView.builder(
                       physics: const BouncingScrollPhysics(),
                       itemCount: appProvider.dateSheetList.length,
@@ -227,6 +229,102 @@ class _FetchDatesheetsState extends State<FetchDatesheets> {
                               ],),
                             ),
                           ),
+                    ) :
+                    ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: searchList.length,
+                      itemBuilder: (context, index) =>
+                          Container(
+                            clipBehavior: Clip.antiAlias,
+                            margin: index == searchList.length-1 ? const EdgeInsets.only(top: 20, bottom: 30) : const EdgeInsets.only(top: 20),
+                            width: double.infinity,
+                            height: 185,
+                            decoration: BoxDecoration(
+                                color: AppAssets.whiteColor,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [BoxShadow(
+                                  spreadRadius: 5,
+                                  blurRadius: 5,
+                                  offset: const Offset(0,3),
+                                  color: AppAssets.shadowColor.withOpacity(0.5),
+                                )]
+                            ),
+                            child: Banner(
+                              location: BannerLocation.topEnd,
+                              message: searchList[index].sheetStatus == "Active" ? "Active" : "Inactive",
+                              color: searchList[index].sheetStatus == "Active" ? Colors.green : Colors.red,
+                              child: Stack(children: [
+                                Container(padding: const EdgeInsets.all(20), child: Opacity(opacity: 0.04, child: Align(alignment: Alignment.centerRight, child: Image.asset(AppAssets.dateSheetColored,)))),
+                                Row(children: [
+                                  Container(
+                                    width: 10,
+                                    height: double.infinity,
+                                    color: AppAssets.primaryColor,
+                                  ),
+                                  Expanded(child: Container(
+                                    height: double.infinity,
+                                    padding: const EdgeInsets.all(12),
+                                    child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                                      Row(children: [
+                                        const Icon(Icons.class_, color: AppAssets.textLightColor,),
+                                        const SizedBox(width: 8,),
+                                        Expanded(child: Text("${searchList[index].classModel.className} ${searchList[index].classModel.classSemester} ${searchList[index].classModel.classType}", style: AppAssets.latoBold_textDarkColor_16, maxLines: 1, overflow: TextOverflow.ellipsis,)),
+                                      ],),
+                                      const SizedBox(height: 8,),
+                                      Row(children: [
+                                        const SizedBox(width: 6,),
+                                        Text("Subject Code: ", style: AppAssets.latoBold_textDarkColor_14, maxLines: 1, overflow: TextOverflow.ellipsis,),
+                                        const SizedBox(width: 8,),
+                                        Expanded(child: Text(searchList[index].subjectModel.subjectCode, style: AppAssets.latoRegular_textDarkColor_14, maxLines: 1, overflow: TextOverflow.ellipsis,)),
+                                      ],),
+                                      const SizedBox(height: 8,),
+                                      Row(crossAxisAlignment: CrossAxisAlignment.start,children: [
+                                        const SizedBox(width: 6,),
+                                        Text("Subject Name: ", style: AppAssets.latoBold_textDarkColor_14, maxLines: 1, overflow: TextOverflow.ellipsis,),
+                                        const SizedBox(width: 8,),
+                                        Expanded(child: Text(searchList[index].subjectModel.subjectName, style: AppAssets.latoRegular_textDarkColor_14, maxLines: 2, overflow: TextOverflow.ellipsis,)),
+                                      ],),
+                                      const SizedBox(height: 8,),
+                                      Row(children: [
+                                        const SizedBox(width: 6,),
+                                        Text("Time Slot: ", style: AppAssets.latoBold_textDarkColor_14, maxLines: 1, overflow: TextOverflow.ellipsis,),
+                                        const SizedBox(width: 8,),
+                                        Expanded(child: Text("${searchList[index].sheetStartTime} - ${appProvider.dateSheetList[index].sheetEndTime}", style: AppAssets.latoRegular_textDarkColor_14, maxLines: 1, overflow: TextOverflow.ellipsis,)),
+                                      ],),
+                                      const SizedBox(height: 8,),
+                                      Expanded(
+                                        child: Row(crossAxisAlignment: CrossAxisAlignment.start,children: [
+                                          const Icon(Icons.calendar_view_week, color: AppAssets.textLightColor,),
+                                          const SizedBox(width: 8,),
+                                          Expanded(child: Text(searchList[index].sheetDate, style: AppAssets.latoRegular_textDarkColor_14, maxLines: 2, overflow: TextOverflow.ellipsis,)),
+                                          const SizedBox(width: 6,),
+                                          GestureDetector(
+                                            onTap: () {
+                                              _deleteDialog(searchList[index]);
+                                            },
+                                            child: Container(
+                                              width: 30,
+                                              height: double.infinity,
+                                              padding: const EdgeInsets.all(5),
+                                              child: SizedBox(
+                                                  width: 30,
+                                                  height: 30,
+                                                  child: Icon(Icons.delete, color: AppAssets.failureColor.withOpacity(0.7),)),
+                                            ),
+                                          ),
+                                        ],),
+                                      ),
+                                    ],),
+                                  )),
+                                  Container(
+                                    width: 10,
+                                    height: double.infinity,
+                                    color: AppAssets.primaryColor,
+                                  ),
+                                ],),
+                              ],),
+                            ),
+                          ),
                     ),
                   ),
                 ],
@@ -260,5 +358,27 @@ class _FetchDatesheetsState extends State<FetchDatesheets> {
         ),),
       ),
     );
+  }
+
+  onTextChanged(String text) async {
+    print("______: ${text}");
+    setState(() {searchList.clear();});
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
+
+    if(text.toLowerCase().isEmpty){
+      setState(() {searchList.clear();});
+    }
+
+    Provider.of<AppProvider>(context, listen: false).dateSheetList.forEach((data) {
+      if ("${data.classModel.className} ${data.classModel.classSemester} ${data.classModel.classType}".toLowerCase().contains(text.toLowerCase()) ||
+          data.subjectModel.subjectCode.toLowerCase().contains(text.toLowerCase()) ||
+          data.subjectModel.subjectName.toLowerCase().contains(text.toLowerCase()) ||
+          data.departmentModel.departmentName.toLowerCase().contains(text.toLowerCase())) {
+        setState(() {searchList.add(data);});
+      }
+    });
   }
 }

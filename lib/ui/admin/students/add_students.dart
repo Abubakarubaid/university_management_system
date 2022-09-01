@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:pk_cnic_input_field/pk_cnic_input_field.dart';
 import 'package:provider/provider.dart';
 import 'package:university_management_system/models/class_model.dart';
 import 'package:university_management_system/models/student_model.dart';
@@ -17,11 +18,10 @@ import '../../../utilities/constants.dart';
 import '../../../widgets/progress_bar.dart';
 
 class AddStudents extends StatefulWidget {
-  bool editStatus;
   StudentModel studentModel;
   List<DepartmentModel> departmentList;
   List<ClassModel> classList;
-  AddStudents({required this.editStatus, required this.departmentList, required this.classList, required this.studentModel, Key? key}) : super(key: key);
+  AddStudents({required this.departmentList, required this.classList, required this.studentModel, Key? key}) : super(key: key);
 
   @override
   State<AddStudents> createState() => _AddStudentsState();
@@ -36,6 +36,8 @@ class _AddStudentsState extends State<AddStudents> {
   var phoneController = TextEditingController();
   var sessionController = TextEditingController();
   var statusController = TextEditingController();
+  var addressController = TextEditingController();
+  var cnicController = TextEditingController();
 
   var itemsGender = [
     "Select Gender",
@@ -70,8 +72,6 @@ class _AddStudentsState extends State<AddStudents> {
     Constants.getAuthToken().then((value) {
       authToken = value;
     });
-
-    checkUserData();
 
     getDepartments();
     getClasses(false);
@@ -158,18 +158,6 @@ class _AddStudentsState extends State<AddStudents> {
     }
   }
 
-  void checkUserData() {
-    if(widget.editStatus){
-      nameController.text = widget.studentModel.userModel.userName;
-      emailController.text = widget.studentModel.userModel.userEmail;
-      passwordController.text = widget.studentModel.userModel.userPassword;
-      rollNoController.text = widget.studentModel.userModel.userRollNo;
-      phoneController.text = widget.studentModel.userModel.userPhone;
-      sessionController.text = widget.studentModel.userModel.userSession;
-      genderSelectedValue = widget.studentModel.userModel.userGender == "male" ? "Male" : widget.studentModel.userModel.userGender == "female" ? "Female" : "Others";
-      statusSelectedValue = widget.studentModel.userModel.userStatus == "active" ? "Active" : widget.studentModel.userModel.userStatus == "in_active" ? "Inactive" : "Suspended";
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -193,34 +181,6 @@ class _AddStudentsState extends State<AddStudents> {
                       onChange: (text) {
                         print("-------------:${text}" );
                       }
-                  ),
-                  Visibility(
-                    visible: widget.editStatus,
-                    child: Container(
-                      margin: EdgeInsets.only(top: 20),
-                      child: PrimaryTextFiled(
-                          controller: emailController,
-                          hint: "Student Email",
-                          keyboardType: TextInputType.text,
-                          onChange: (text) {
-                            print("-------------:${text}" );
-                          }
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: widget.editStatus,
-                    child: Container(
-                      margin: EdgeInsets.only(top: 20),
-                      child: PrimaryTextFiled(
-                          controller: passwordController,
-                          hint: "Student Password",
-                          keyboardType: TextInputType.text,
-                          onChange: (text) {
-                            print("-------------:${text}" );
-                          }
-                      ),
-                    ),
                   ),
                   const SizedBox(height: 20,),
                   PrimaryTextFiled(
@@ -250,6 +210,41 @@ class _AddStudentsState extends State<AddStudents> {
                       }
                   ),
                   const SizedBox(height: 20,),
+                  PrimaryTextFiled(
+                      controller: addressController,
+                      hint: "Address",
+                      keyboardType: TextInputType.number,
+                      onChange: (text) {
+                        print("-------------:${text}" );
+                      }
+                  ),
+                  const SizedBox(height: 20,),
+                  Container(
+                    width: double.infinity,
+                    height: 70,
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppAssets.whiteColor,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppAssets.textLightColor, width: 1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppAssets.shadowColor.withOpacity(0.5),
+                          spreadRadius: 4,
+                          blurRadius: 8,
+                          offset: const Offset(0, 6),
+                        )],
+                    ),
+                    child: PKCNICInputField(
+                      prefixIconColor: AppAssets.textLightColor,
+                      cursorColor: AppAssets.primaryColor,
+                      onChanged: (value) {
+                        cnicController.text = value;
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 20,),
                   PrimaryDropDownFiled(
                       hint: "Select Gender",
                       selectedValue: genderSelectedValue,
@@ -260,7 +255,6 @@ class _AddStudentsState extends State<AddStudents> {
                         });
                       }
                   ),
-                  Visibility(visible: widget.editStatus,child: Container(alignment: Alignment.centerLeft, margin: EdgeInsets.only(top: 20), child: Text(widget.studentModel.departmentModel.departmentName))),
                   Container(
                     child: Container(
                       width: double.infinity,
@@ -298,7 +292,6 @@ class _AddStudentsState extends State<AddStudents> {
                       ),
                     ),
                   ),
-                  Visibility(visible: widget.editStatus,child: Container(alignment: Alignment.centerLeft, margin: EdgeInsets.only(top: 20), child: Text("${widget.studentModel.classModel.className} ${widget.studentModel.classModel.classSemester} ${widget.studentModel.classModel.classType}"))),
                   Container(
                     child: Container(
                       width: double.infinity,
@@ -335,21 +328,7 @@ class _AddStudentsState extends State<AddStudents> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20,),
-                  Visibility(
-                    visible: widget.editStatus,
-                    child: PrimaryDropDownFiled(
-                        hint: "Select Status",
-                        selectedValue: statusSelectedValue,
-                        items: itemsStatus,
-                        onChange: (text) {
-                          setState(() {
-                            statusSelectedValue = text.toString();
-                          });
-                        }
-                    ),
-                  ),
-                  const SizedBox(height: 50,),
+                  const SizedBox(height: 30,),
                   Visibility(
                     visible: !Provider.of<AppProvider>(context, listen: true).progress,
                     child: PrimaryButton(
@@ -357,7 +336,7 @@ class _AddStudentsState extends State<AddStudents> {
                       height: 50,
                       buttonMargin: const EdgeInsets.only(top: 20, bottom: 30),
                       buttonPadding: const EdgeInsets.all(12),
-                      buttonText: widget.editStatus ? "Update Information" : "Add Student",
+                      buttonText: "Add Student",
                       buttonTextStyle: AppAssets.latoBold_whiteColor_16,
                       shadowColor: AppAssets.shadowColor,
                       buttonRadius: BorderRadius.circular(30),
@@ -371,6 +350,10 @@ class _AddStudentsState extends State<AddStudents> {
                           MyMessage.showFailedMessage("Student phone is missing", context);
                         } else if(sessionController.text.isEmpty){
                           MyMessage.showFailedMessage("Student session is missing", context);
+                        } else if(addressController.text.isEmpty){
+                          MyMessage.showFailedMessage("Student address is missing", context);
+                        } else if(cnicController.text.isEmpty){
+                          MyMessage.showFailedMessage("Student cnic is missing", context);
                         } else if(genderSelectedValue == "Select Gender"){
                           MyMessage.showFailedMessage("Student gender is missing", context);
                         } else if(dptSelectedValue.departmentId == 0){
@@ -385,6 +368,8 @@ class _AddStudentsState extends State<AddStudents> {
                           studentModel.userModel.userSession = sessionController.text;
                           studentModel.userModel.userRollNo = rollNoController.text;
                           studentModel.userModel.userGender = genderSelectedValue == "Male" ? "male" : genderSelectedValue == "Female" ? "female" : "others";
+                          studentModel.userModel.userCnic = cnicController.text;
+                          studentModel.userModel.userAddress = addressController.text;
                           studentModel.userModel.userDepartment = dptSelectedValue.departmentId.toString();
                           studentModel.userModel.userClass = classSelectedValue.classId.toString();
                           studentModel.userModel.userType = "student";
@@ -392,19 +377,7 @@ class _AddStudentsState extends State<AddStudents> {
                           studentModel.departmentModel = dptSelectedValue;
                           studentModel.classModel = classSelectedValue;
 
-                          if(widget.editStatus){
-                            studentModel.userModel.userId = widget.studentModel.userModel.userId;
-                            Provider.of<AppProvider>(context, listen: false).updateStudent(studentModel, authToken).then((value) async {
-                              if(value.isSuccess){
-                                MyMessage.showSuccessMessage(value.message, context);
-                                await Future.delayed(const Duration(milliseconds: 2000),(){
-                                  Navigator.of(context).pop();
-                                });
-                              }else{
-                                MyMessage.showFailedMessage(value.message, context);
-                              }
-                            });
-                          }else{
+
                             Provider.of<AppProvider>(context, listen: false).addStudent(studentModel, authToken).then((value) async {
                               if(value.isSuccess){
                                 MyMessage.showSuccessMessage(value.message, context);
@@ -415,7 +388,7 @@ class _AddStudentsState extends State<AddStudents> {
                                 MyMessage.showFailedMessage(value.message, context);
                               }
                             });
-                          }
+
 
                         }
                       },
@@ -441,7 +414,7 @@ class _AddStudentsState extends State<AddStudents> {
               ),
               child: Row(children: [
                 GestureDetector(onTap: () {Navigator.of(context).pop();}, child: Container(padding: const EdgeInsets.all(16), height: 50, width: 50, child: SvgPicture.asset(AppAssets.backArrowIcon, color: AppAssets.iconsTintDarkGreyColor,))),
-                Expanded(child: Container(padding: const EdgeInsets.only(left: 20, right: 20), child: Center(child: Text(widget.editStatus ? "Edit Student" : "Add Student", style: AppAssets.latoBold_textDarkColor_20)))),
+                Expanded(child: Container(padding: const EdgeInsets.only(left: 20, right: 20), child: Center(child: Text("Add Student", style: AppAssets.latoBold_textDarkColor_20)))),
                 GestureDetector(
                   onTap: () {
                   },

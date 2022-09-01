@@ -31,6 +31,7 @@ class Constants{
 
   static const String TEACHER_ADD = "TEACHER_ADD: ";
   static const String TEACHER_FETCH = "TEACHER_FETCH: ";
+  static const String TEACHER_UPDATE = "TEACHER_UPDATE: ";
 
   static const String STUDENT_ADD = "STUDENT_ADD: ";
   static const String STUDENT_UPDATE = "STUDENT_UPDATE: ";

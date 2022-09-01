@@ -36,6 +36,7 @@ class _ViewStudentsState extends State<ViewStudents> {
   ClassModel classSelectedValue = ClassModel(classId: 0, className: "Select Class", classSemester: "", classType: "", departmentModel: DepartmentModel.getInstance());
   var classItems;
 
+  List<StudentModel> searchList = [];
   String authToken = "";
 
   @override
@@ -164,6 +165,14 @@ class _ViewStudentsState extends State<ViewStudents> {
     }
   }
 
+  filter(ClassModel value){
+    setState(() {
+      classSelectedValue = value;
+    });
+    onFilterChanged("${value.className} ${value.classSemester} ${value.classType}", dptSelectedValue.departmentName);
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -214,7 +223,7 @@ class _ViewStudentsState extends State<ViewStudents> {
                         controller: searchController,
                         hint: "Search here",
                         keyboardType: TextInputType.text,
-                        onChange: (text) {}
+                        onChange: onTextChanged
                     ),
                     Align(alignment: Alignment.centerRight, child: GestureDetector(onTap: () {
                       showMaterialModalBottomSheet(
@@ -284,15 +293,13 @@ class _ViewStudentsState extends State<ViewStudents> {
                                   ),
                                   isExpanded: true,
                                   onChanged: (value) {
-                                    setState(() {
-                                      classSelectedValue = value!;
-                                    });
+                                    filter(value!);
                                   },
                                   items: classItems,
                                 ),
                               ),
                               const SizedBox(height: 20,),
-                              PrimaryButton(
+                              /*PrimaryButton(
                                 width: double.infinity,
                                 height: 50,
                                 buttonMargin: const EdgeInsets.only(top: 20, bottom: 30),
@@ -304,7 +311,7 @@ class _ViewStudentsState extends State<ViewStudents> {
                                 onPress: () {
 
                                 },
-                              ),
+                              ),*/
                             ],),);
                           });
                         });
@@ -316,6 +323,7 @@ class _ViewStudentsState extends State<ViewStudents> {
                   const Center(child: SizedBox(height: 80, child: ProgressBarWidget(),)) :
                   appProvider.studentList.isEmpty ?
                   const NoDataFound() :
+                  searchList.isEmpty ?
                   ListView.builder(
                       physics: const BouncingScrollPhysics(),
                       itemCount: appProvider.studentList.length,
@@ -361,19 +369,56 @@ class _ViewStudentsState extends State<ViewStudents> {
                                       ],
                                     ),
                                   ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddStudents(editStatus: true, studentModel: appProvider.studentList[index], departmentList: departmentList, classList: classList,)));
-                                    },
+                                ],),
+                              ),
+                              Container(height: 1, width: double.infinity, color: AppAssets.textLightColor,),
+                            ],),
+                          ),
+                        );
+                      }) :
+                  ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: searchList.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => StudentCompleteProfile(studentModel: searchList[index],),));
+                          },
+                          child: Container(
+                            height: 70,
+                            width: double.infinity,
+                            child: Column(children: [
+                              Expanded(
+                                child: Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                  Container(
+                                    width: 70,
+                                    height: double.infinity,
+                                    padding: const EdgeInsets.all(12),
                                     child: Container(
-                                      width: 30,
-                                      height: double.infinity,
-                                      padding: const EdgeInsets.all(5),
-                                      margin: const EdgeInsets.only(right: 10),
-                                      child: SizedBox(
-                                          width: 50,
-                                          height: 50,
-                                          child: SvgPicture.asset(AppAssets.editIcon, color: AppAssets.textLightColor,)),
+                                        clipBehavior: Clip.antiAlias,
+                                        width: 50,
+                                        height: 50,
+                                        decoration: BoxDecoration(
+                                          //border: Border.all(color: AppAssets.textLightColor, width: 1),
+                                            borderRadius: BorderRadius.circular(35)
+                                        ),
+                                        child: SvgPicture.asset(searchList[index].userModel.userGender == "female" ? AppAssets.femaleAvatar : AppAssets.maleAvatar, fit: BoxFit.fill, color: AppAssets.textDarkColor,)),
+                                  ),
+                                  const SizedBox(width: 6,),
+                                  Expanded(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.only(right: 16),
+                                          child: Align(alignment: Alignment.centerLeft, child: Text(searchList[index].userModel.userRollNo, style: AppAssets.latoBold_textDarkColor_14, maxLines: 1, overflow: TextOverflow.ellipsis,)),
+                                        ),
+                                        const SizedBox(height: 4,),
+                                        Container(
+                                          padding: const EdgeInsets.only(right: 16),
+                                          child: Align(alignment: Alignment.centerLeft, child: Text(searchList[index].userModel.userName, style: AppAssets.latoRegular_textDarkColor_16, maxLines: 2, overflow: TextOverflow.ellipsis,)),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],),
@@ -405,7 +450,7 @@ class _ViewStudentsState extends State<ViewStudents> {
                 Expanded(child: Container(padding: const EdgeInsets.only(left: 20, right: 20), child: Center(child: Text("Students", style: AppAssets.latoBold_textDarkColor_20)))),
                 GestureDetector(
                     onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddStudents(editStatus: false, studentModel: StudentModel.getInstance(), departmentList: departmentList, classList: classList,)));
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddStudents(studentModel: StudentModel.getInstance(), departmentList: departmentList, classList: classList,)));
                     },
                     child: Container(padding: const EdgeInsets.all(10), height: 50, width: 50, child: Visibility(visible: !appProvider.progress,child: SvgPicture.asset(AppAssets.addIcon, color: AppAssets.iconsTintDarkGreyColor,)))),
               ],),
@@ -414,5 +459,42 @@ class _ViewStudentsState extends State<ViewStudents> {
         ),)
       ),
     );
+  }
+
+  onTextChanged(String text) async {
+    setState(() {searchList.clear();});
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
+
+    if(text.toLowerCase().isEmpty){
+      setState(() {searchList.clear();});
+    }
+
+    Provider.of<AppProvider>(context, listen: false).studentList.forEach((data) {
+      if (data.userModel.userName.toLowerCase().contains(text.toLowerCase()) || data.userModel.userRollNo.toLowerCase().contains(text.toLowerCase())) {
+        setState(() {searchList.add(data);});
+      }
+    });
+  }
+
+  onFilterChanged(String textClass, String textDepartment) async {
+    setState(() {searchList.clear();});
+    if (textClass.isEmpty || textDepartment.isEmpty) {
+      setState(() {});
+      return;
+    }
+
+    if(textClass.toLowerCase().isEmpty || textDepartment.toLowerCase().isEmpty){
+      setState(() {searchList.clear();});
+    }
+
+    Provider.of<AppProvider>(context, listen: false).studentList.forEach((data) {
+      print("______: ${data.departmentModel.departmentName}");
+      if (data.departmentModel.departmentName.toLowerCase().contains(textDepartment.toLowerCase()) && "${data.classModel.className} ${data.classModel.classSemester} ${data.classModel.classType}".toLowerCase().contains(textClass.toLowerCase())) {
+        setState(() {searchList.add(data);});
+      }
+    });
   }
 }

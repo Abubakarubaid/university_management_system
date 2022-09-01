@@ -8,6 +8,7 @@ import 'package:university_management_system/ui/admin/students/student_complete_
 import 'package:university_management_system/ui/admin/teachers/fetch_teacher_workloads.dart';
 import 'package:university_management_system/ui/admin/teachers/teacher_complete_profile.dart';
 import 'package:university_management_system/utilities/base/my_message.dart';
+import 'package:university_management_system/utilities/ip_configurations.dart';
 import 'package:university_management_system/widgets/no_data.dart';
 import 'package:university_management_system/widgets/primary_button.dart';
 import 'package:university_management_system/widgets/primary_search_field.dart';
@@ -33,6 +34,7 @@ class _ViewTeachersState extends State<ViewTeachers> {
   DepartmentModel dptSelectedValue = DepartmentModel(departmentId: 0, departmentName: "Select Department", departmentType: "Demo");
   var departmentItems;
 
+  List<TeacherModel> searchList = [];
   String authToken = "";
 
   @override
@@ -134,6 +136,14 @@ class _ViewTeachersState extends State<ViewTeachers> {
     );
   }
 
+  filter(DepartmentModel value){
+    setState(() {
+      dptSelectedValue = value;
+    });
+    onTextChanged(value.departmentName);
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,6 +172,7 @@ class _ViewTeachersState extends State<ViewTeachers> {
                       onTap: () {
                         setState(() {
                           getDepartments(true);
+                          onTextChanged("");
                         });
                       },
                       child: SizedBox(
@@ -178,7 +189,7 @@ class _ViewTeachersState extends State<ViewTeachers> {
                         controller: searchController,
                         hint: "Search here",
                         keyboardType: TextInputType.text,
-                        onChange: (text) {}
+                        onChange: onTextChanged
                     ),
                     Align(alignment: Alignment.centerRight, child: GestureDetector(onTap: () {
                       showMaterialModalBottomSheet(
@@ -213,15 +224,13 @@ class _ViewTeachersState extends State<ViewTeachers> {
                                     ),
                                     isExpanded: true,
                                     onChanged: (value) {
-                                      setState(() {
-                                        dptSelectedValue = value!;
-                                      });
+                                      filter(value!);
                                     },
                                     items: departmentItems,
                                   ),
                                 ),
                                 const SizedBox(height: 20,),
-                                PrimaryButton(
+                                /*PrimaryButton(
                                   width: double.infinity,
                                   height: 50,
                                   buttonMargin: const EdgeInsets.only(top: 20, bottom: 30),
@@ -233,7 +242,7 @@ class _ViewTeachersState extends State<ViewTeachers> {
                                   onPress: () {
 
                                   },
-                                ),
+                                ),*/
                               ],),);
                             });
                           });
@@ -245,6 +254,7 @@ class _ViewTeachersState extends State<ViewTeachers> {
                   const Center(child: SizedBox(height: 80, child: ProgressBarWidget(),)) :
                   appProvider.teacherList.isEmpty ?
                   const NoDataFound() :
+                  searchList.isEmpty ?
                   ListView.builder(
                       physics: const BouncingScrollPhysics(),
                       itemCount: appProvider.teacherList.length,
@@ -272,7 +282,7 @@ class _ViewTeachersState extends State<ViewTeachers> {
                                           //border: Border.all(color: AppAssets.textLightColor, width: 1),
                                             borderRadius: BorderRadius.circular(35)
                                         ),
-                                        child: SvgPicture.asset(appProvider.teacherList[index].userModel.userGender == "female" ? AppAssets.femaleAvatar : AppAssets.maleAvatar, fit: BoxFit.fill, color: AppAssets.textDarkColor,)),
+                                        child: appProvider.teacherList[index].userModel.userImage == "null" || appProvider.teacherList[index].userModel.userImage.isEmpty ? SvgPicture.asset(appProvider.teacherList[index].userModel.userGender == "female" ? AppAssets.femaleAvatar : AppAssets.maleAvatar, fit: BoxFit.fill, color: AppAssets.textDarkColor,) : Image.network("${IPConfigurations.serverImagePath}${appProvider.teacherList[index].userModel.userImage}", fit: BoxFit.cover,)),
                                   ),
                                   const SizedBox(width: 6,),
                                   Expanded(
@@ -333,6 +343,94 @@ class _ViewTeachersState extends State<ViewTeachers> {
                             ],),
                           ),
                         );
+                      }) :
+                  ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: searchList.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => TeacherCompleteProfile(teacherModel: searchList[index],),));
+                          },
+                          child: SizedBox(
+                            height: 70,
+                            width: double.infinity,
+                            child: Column(children: [
+                              Expanded(
+                                child: Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                  Container(
+                                    width: 70,
+                                    height: double.infinity,
+                                    padding: const EdgeInsets.all(12),
+                                    child: Container(
+                                        clipBehavior: Clip.antiAlias,
+                                        width: 50,
+                                        height: 50,
+                                        decoration: BoxDecoration(
+                                          //border: Border.all(color: AppAssets.textLightColor, width: 1),
+                                            borderRadius: BorderRadius.circular(35)
+                                        ),
+                                        child: searchList[index].userModel.userImage == "null" || searchList[index].userModel.userImage.isEmpty ? SvgPicture.asset(searchList[index].userModel.userGender == "female" ? AppAssets.femaleAvatar : AppAssets.maleAvatar, fit: BoxFit.fill, color: AppAssets.textDarkColor,) : Image.network("${IPConfigurations.serverImagePath}${searchList[index].userModel.userImage}", fit: BoxFit.cover,)),
+                                  ),
+                                  const SizedBox(width: 6,),
+                                  Expanded(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.only(right: 16),
+                                          child: Align(alignment: Alignment.centerLeft, child: Text(searchList[index].userModel.userName, style: AppAssets.latoBold_textDarkColor_16, maxLines: 1, overflow: TextOverflow.ellipsis,)),
+                                        ),
+                                        const SizedBox(height: 4,),
+                                        Container(
+                                          padding: const EdgeInsets.only(right: 16),
+                                          child: Align(alignment: Alignment.centerLeft, child: Text(searchList[index].departmentModel.departmentName, style: AppAssets.latoRegular_textDarkColor_14, maxLines: 2, overflow: TextOverflow.ellipsis,)),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible: searchList[index].userModel.userStatus == "in_active",
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        _approveDialog(searchList[index]);
+                                      },
+                                      child: Container(
+                                        width: 30,
+                                        height: double.infinity,
+                                        padding: const EdgeInsets.all(3),
+                                        margin: const EdgeInsets.only(right: 10),
+                                        child: SizedBox(
+                                            width: 50,
+                                            height: 50,
+                                            child: SvgPicture.asset(AppAssets.approveIcon, color: AppAssets.successColor,)),
+                                      ),
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible: searchList[index].userModel.userStatus == "active",
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => FetchTeacherWorkload(teacherModel: searchList[index],),));
+                                      },
+                                      child: Container(
+                                        width: 30,
+                                        height: double.infinity,
+                                        padding: const EdgeInsets.all(3),
+                                        margin: const EdgeInsets.only(right: 10),
+                                        child: SizedBox(
+                                            width: 50,
+                                            height: 50,
+                                            child: Icon(Icons.arrow_forward_ios, color: AppAssets.textLightColor,)),
+                                      ),
+                                    ),
+                                  ),
+                                ],),
+                              ),
+                              Container(height: 1, width: double.infinity, color: AppAssets.textLightColor,),
+                            ],),
+                          ),
+                        );
                       }),
                 ),
               ],),
@@ -365,5 +463,28 @@ class _ViewTeachersState extends State<ViewTeachers> {
         ),),
       ),
     );
+  }
+
+  onTextChanged(String text) async {
+    print("______: ${text}");
+    setState(() {searchList.clear();});
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
+
+    if(text.toLowerCase().isEmpty){
+      setState(() {searchList.clear();});
+    }
+
+    Provider.of<AppProvider>(context, listen: false).teacherList.forEach((data) {
+      print("______: ${data.departmentModel.departmentName}");
+      if (data.userModel.userName.toLowerCase().contains(text.toLowerCase())) {
+        setState(() {searchList.add(data);});
+      }
+      if (data.departmentModel.departmentName.toLowerCase().contains(text.toLowerCase())) {
+        setState(() {searchList.add(data);});
+      }
+    });
   }
 }
