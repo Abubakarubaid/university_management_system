@@ -37,8 +37,8 @@ class TeacherProfile extends StatefulWidget {
 class _TeacherProfileState extends State<TeacherProfile> {
 
   final SignatureController _signatureController = SignatureController(
-    penStrokeWidth: 2,
-    penColor: Colors.blue,
+    penStrokeWidth: 3,
+    penColor: Colors.black,
     exportBackgroundColor: Colors.transparent,
   );
   Uint8List? imageData;

@@ -9,6 +9,7 @@ import 'package:university_management_system/ui/admin/timetable/timetable_page.d
 import 'package:university_management_system/ui/settings_screen.dart';
 import 'package:university_management_system/ui/teacher/teacher_dashboard.dart';
 import 'package:university_management_system/ui/teacher/teacher_datesheet/fetch_datesheets.dart';
+import 'package:university_management_system/ui/teacher/teacher_datesheet/view_teacher_datesheet.dart';
 import 'package:university_management_system/ui/teacher/teacher_setting/teacher_settings_screen.dart';
 import 'package:university_management_system/ui/teacher/teacher_timtable/teacher_timetable_page.dart';
 
@@ -47,13 +48,15 @@ class _MainTeacherDashboardState extends State<MainTeacherDashboard> {
           child: Stack(children: [
             SizedBox.expand(
               child: PageView(
+                physics: const NeverScrollableScrollPhysics(),
                 controller: _pageController,
                 onPageChanged: (index) {
                   setState(() => _currentIndex = index);
                 },
                 children: const <Widget>[
                   TeacherDashboard(),
-                  TeacherDatesheets(),
+                  //TeacherDatesheets(),
+                  ViewTeacherDateSheet(),
                   TeacherTimeTablePage(),
                   TeacherSettingsScreen(),
                 ],

@@ -9,10 +9,12 @@ import 'package:university_management_system/models/rooms_model.dart';
 import 'package:university_management_system/models/subject_model.dart';
 import 'package:university_management_system/models/teacher_model.dart';
 import 'package:university_management_system/models/timeslots_model.dart';
+import 'package:university_management_system/models/timetable_upload_model.dart';
 import 'package:university_management_system/models/user_model.dart';
 import 'package:university_management_system/models/workload_assignment_model.dart';
 
 import '../models/attendance_model.dart';
+import '../models/datesheet_upload_model.dart';
 import '../models/student_model.dart';
 import '../utilities/base/api_response.dart';
 import '../utilities/ip_configurations.dart';
@@ -625,7 +627,45 @@ class AppRepo{
     }
   }
 
-  Future<ApiResponse> fetchAllDateSheets(DepartmentModel model, String token)async{
+  Future<ApiResponse> addDateSheetPdf(DateSheetUploadModel model, String token)async{
+    ApiResponse apiResponse;
+    var request = http.MultipartRequest("POST", Uri.parse(IPConfigurations.addDateSheetPdfApi));
+
+    print("________________: ${model.departmentModel.departmentId}");
+    request.fields['department_id'] = model.departmentModel.departmentId.toString();
+    request.fields['date'] = model.dateSheetDate;
+    request.fields['status'] = model.dateSheetStatus;
+
+    if(model.dateSheetFile.isNotEmpty) {
+      request.files.add(await http.MultipartFile.fromPath("file", model.dateSheetFile,));
+    }
+
+    var response = await request.send();
+    if(response!=null){
+      apiResponse = ApiResponse(await http.Response.fromStream(response), response ,null);
+      return apiResponse;
+    }else{
+      apiResponse = ApiResponse.withError("Error");
+      return apiResponse;
+    }
+  }
+
+  Future<ApiResponse> fetchDateSheetPdf(String departmentId, String token)async{
+    ApiResponse apiResponse;
+    var response = await http.get(Uri.parse(IPConfigurations.fetchDateSheetPdfApi),
+        headers: {
+          'Authorization': 'Bearer $token',
+        });
+    if(response.body.isNotEmpty){
+      apiResponse = ApiResponse(response,null,null);
+      return apiResponse;
+    }else{
+      apiResponse = ApiResponse.withError("Error");
+      return apiResponse;
+    }
+  }
+
+  Future<ApiResponse> fetchAllDateSheets(int departmentId, String token)async{
     ApiResponse apiResponse;
     var response = await http.get(Uri.parse(IPConfigurations.fetchDateSheetApi),
         headers: {
@@ -700,6 +740,66 @@ class AppRepo{
   Future<ApiResponse> fetchAttendance(int workloadId, String token)async{
     ApiResponse apiResponse;
     var response = await http.get(Uri.parse("${IPConfigurations.fetchAttendanceApi}?workloads_id=$workloadId"),
+        headers: {
+          'Authorization': 'Bearer $token',
+        });
+    if(response.body.isNotEmpty){
+      apiResponse = ApiResponse(response,null,null);
+      return apiResponse;
+    }else{
+      apiResponse = ApiResponse.withError("Error");
+      return apiResponse;
+    }
+  }
+//----------------------------------------------------------------------------//
+
+  /// TimeTable Repo
+  Future<ApiResponse> addSingleTimeTable(TimeTableUploadModel model, String token)async{
+    ApiResponse apiResponse;
+    var response = await http.post(Uri.parse(IPConfigurations.addTimeTableApi),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+        body: {
+          "workload_id": model.workload_id.toString(),
+          "room_id": model.roomId.toString(),
+          "time_slot_id": model.timeSlotId.toString(),
+          "user_id": model.userId.toString(),
+          "date": model.date.toString(),
+          "day": model.day.toString(),
+          "status": model.status.toString(),
+        });
+    if(response.body.isNotEmpty){
+      apiResponse = ApiResponse(response,null,null);
+      return apiResponse;
+    }else{
+      apiResponse = ApiResponse.withError("Error");
+      return apiResponse;
+    }
+  }
+
+  Future<ApiResponse> addBulkTimeTable(String data, String token)async{
+    print("____________: ${data}");
+    ApiResponse apiResponse;
+    var response = await http.post(Uri.parse(IPConfigurations.addBulkTimeTableApi),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+        body: {
+          "data": data,
+        });
+    if(response.body.isNotEmpty){
+      apiResponse = ApiResponse(response,null,null);
+      return apiResponse;
+    }else{
+      apiResponse = ApiResponse.withError("Error");
+      return apiResponse;
+    }
+  }
+
+  Future<ApiResponse> fetchSingleTimeTable(int userId, String token)async{
+    ApiResponse apiResponse;
+    var response = await http.get(Uri.parse("${IPConfigurations.fetchSingleTeacherTimeTableApi}?user_id=$userId"),
         headers: {
           'Authorization': 'Bearer $token',
         });

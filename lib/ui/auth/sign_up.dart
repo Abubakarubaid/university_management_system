@@ -32,8 +32,8 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
 
   final SignatureController _signatureController = SignatureController(
-    penStrokeWidth: 2,
-    penColor: Colors.blue,
+    penStrokeWidth: 3,
+    penColor: Colors.black,
     exportBackgroundColor: Colors.transparent,
   );
   Uint8List? imageData;
@@ -207,6 +207,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 child: Text('Cancel', style: AppAssets.latoBlack_failureColor_15,),
                 onPressed: () {
                   Navigator.of(context).pop();
+                  _handleClearButtonPressed();
                 },
               ),
             ] : null

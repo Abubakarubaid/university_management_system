@@ -62,6 +62,7 @@ class _DashboardState extends State<Dashboard> {
           child: Stack(children: [
             SizedBox.expand(
               child: PageView(
+                physics: const NeverScrollableScrollPhysics(),
                 controller: _pageController,
                 onPageChanged: (index) {
                   setState(() => _currentIndex = index);
@@ -89,7 +90,7 @@ class _DashboardState extends State<Dashboard> {
                     )]
               ),
               child: Row(children: [
-                Container(padding: const EdgeInsets.all(10), height: 50, width: 50, child: SvgPicture.asset(AppAssets.dashboardIcon, color: AppAssets.iconsTintDarkGreyColor,)),
+                Container(padding: const EdgeInsets.all(10), height: 50, width: 50, child: Image.asset(AppAssets.main_app_logo, color: AppAssets.iconsTintDarkGreyColor,)),
                 Expanded(child: Container(padding: const EdgeInsets.only(left: 20, right: 20), child: Center(child: Text("Dashboard", style: AppAssets.latoBold_textDarkColor_20)))),
                 GestureDetector(onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AdminProfile()));

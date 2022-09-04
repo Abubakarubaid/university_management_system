@@ -61,6 +61,7 @@ class _AdminDashboardNewState extends State<AdminDashboardNew> {
           height: MediaQuery.of(context).size.height,
           color: AppAssets.backgroundColor,
           child: Stack(children: [
+            Opacity(opacity: 0.08, child: Align(alignment: Alignment.bottomCenter, child: Image.asset(AppAssets.main_app_logo))),
             Column(
               children: [
                 const SizedBox(height: 56,),

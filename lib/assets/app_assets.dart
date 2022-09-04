@@ -16,6 +16,7 @@ class AppAssets{
   static String latoThinItalic="Lato-ThinItalic";
 
   /// Icons
+  static const String main_app_logo="assets/icons/main_app_logo.png";
   static const String addButtonIcon="assets/icons/add_button.png";
   static const String dashboardIcon="assets/icons/dashboard_icon.svg";
   static const String profileIcon="assets/icons/profile_icon.svg";

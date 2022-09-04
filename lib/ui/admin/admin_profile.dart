@@ -135,7 +135,7 @@ class _AdminProfileState extends State<AdminProfile> {
                     children: [
                       const Icon(Icons.email, color: AppAssets.textLightColor,),
                       const SizedBox(width: 10,),
-                      Text(userModel!.userEmail, style: AppAssets.latoRegular_textDarkColor_16, maxLines: 2, overflow: TextOverflow.ellipsis,),
+                      Text(userModel.userEmail, style: AppAssets.latoRegular_textDarkColor_16, maxLines: 2, overflow: TextOverflow.ellipsis,),
                     ],),
                 ),
                 Container(

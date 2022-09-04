@@ -2,25 +2,30 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:university_management_system/models/attendence_complete_model.dart';
 import 'package:university_management_system/models/class_model.dart';
 import 'package:university_management_system/models/datesheet_model.dart';
+import 'package:university_management_system/models/datesheet_upload_model.dart';
 import 'package:university_management_system/models/demo_model.dart';
 import 'package:university_management_system/models/rooms_model.dart';
 import 'package:university_management_system/models/student_model.dart';
 import 'package:university_management_system/models/subject_model.dart';
 import 'package:university_management_system/models/timeslots_model.dart';
+import 'package:university_management_system/models/timetable_upload_model.dart';
 import 'package:university_management_system/models/user_model.dart';
 import 'package:university_management_system/models/workload_assignment_model.dart';
 import 'package:university_management_system/repositories/app_repo.dart';
 import 'package:university_management_system/utilities/constants.dart';
 import 'package:university_management_system/utilities/ip_configurations.dart';
+import 'package:uuid/uuid.dart';
 
 import '../models/attendance_model.dart';
 import '../models/dpt_model.dart';
 import '../models/response_model.dart';
 import '../models/single_teacher_model.dart';
 import '../models/teacher_model.dart';
+import '../models/teacher_own_timetable_model.dart';
 import '../models/teacher_workload_model.dart';
 import '../utilities/base/api_response.dart';
 import '../utilities/shared_preference_manager.dart';
@@ -30,6 +35,7 @@ class AppProvider with ChangeNotifier{
   AppProvider({required this.appRepo});
 
   bool progress = false;
+  bool uploadProgress = false;
   bool studentProgress = false;
   bool dialogProgress = false;
   bool statusApprovalProgress = false;
@@ -47,6 +53,8 @@ class AppProvider with ChangeNotifier{
   List<DatesheetModel> dateSheetList = [];
   SingleTeacherModel singleTeacherModel = SingleTeacherModel.getInstance();
   List<AttendanceCompleteModel> attendanceList = [];
+  List<TeacherOwnTimeTableModel> teacherTimeTableList = [];
+  DateSheetUploadModel dateSheetUploadModel = DateSheetUploadModel.getInstance();
 
 //----------------------------------------------------------------------------//
 
@@ -82,7 +90,7 @@ class AppProvider with ChangeNotifier{
     progress = true;
     notifyListeners();
     ResponseModel responseModel;
-    departmentList = [];
+    departmentList.clear();
 
     ApiResponse apiResponse = await appRepo.fetchAllDepartments(token);
 
@@ -371,6 +379,41 @@ class AppProvider with ChangeNotifier{
     return responseModel;
   }
 
+  Future<ResponseModel> fetchAllRooms_Department(DepartmentModel model, String token)async{
+    progress = true;
+    notifyListeners();
+    ResponseModel responseModel;
+    roomList = [];
+
+    ApiResponse apiResponse = await appRepo.fetchAllRooms(token);
+
+    var parsedResponse = json.decode(apiResponse.response!.body);
+    Constants.printMessage(Constants.ROOM_FETCH, parsedResponse.toString());
+
+    if (apiResponse.response != null && parsedResponse["success"]) {
+      parsedResponse["data"].forEach((e) {
+        RoomsModel roomsModel = RoomsModel.getInstance();
+        roomsModel = RoomsModel.fromJson(e);
+        DepartmentModel departmentModel = DepartmentModel.getInstance();
+        departmentModel = DepartmentModel.fromJson(e["department"]);
+        roomsModel.departmentModel = departmentModel;
+
+        if(departmentModel.departmentId == model.departmentId) {
+          roomList.add(roomsModel);
+        }
+      });
+
+      responseModel = ResponseModel(true, parsedResponse["message"]);
+      progress = false;
+    } else {
+      String errorMessage = parsedResponse["message"];
+      responseModel = ResponseModel(false, errorMessage);
+      progress = false;
+    }
+    notifyListeners();
+    return responseModel;
+  }
+
   Future<ResponseModel> addRoom(RoomsModel roomsModel, String token)async{
     dialogProgress = true;
     notifyListeners();
@@ -459,6 +502,41 @@ class AppProvider with ChangeNotifier{
         timeSlotsModel.departmentModel = departmentModel;
 
         timeSlotList.add(timeSlotsModel);
+      });
+
+      responseModel = ResponseModel(true, parsedResponse["message"]);
+      progress = false;
+    } else {
+      String errorMessage = parsedResponse["message"];
+      responseModel = ResponseModel(false, errorMessage);
+      progress = false;
+    }
+    notifyListeners();
+    return responseModel;
+  }
+
+  Future<ResponseModel> fetchAllTimeSlots_Department(DepartmentModel model, String token)async{
+    progress = true;
+    notifyListeners();
+    ResponseModel responseModel;
+    timeSlotList = [];
+
+    ApiResponse apiResponse = await appRepo.fetchAllTimeSlots(token);
+
+    var parsedResponse = json.decode(apiResponse.response!.body);
+    Constants.printMessage(Constants.TIMESLOT_FETCH, parsedResponse.toString());
+
+    if (apiResponse.response != null && parsedResponse["success"]) {
+      parsedResponse["data"].forEach((e) {
+        TimeSlotsModel timeSlotsModel = TimeSlotsModel.getInstance();
+        timeSlotsModel = TimeSlotsModel.fromJson(e);
+        DepartmentModel departmentModel = DepartmentModel.getInstance();
+        departmentModel = DepartmentModel.fromJson(e["department"]);
+        timeSlotsModel.departmentModel = departmentModel;
+
+        if(departmentModel.departmentId == model.departmentId) {
+          timeSlotList.add(timeSlotsModel);
+        }
       });
 
       responseModel = ResponseModel(true, parsedResponse["message"]);
@@ -795,7 +873,9 @@ class AppProvider with ChangeNotifier{
           workloadAssignmentModel.workDemanded = workLoadElement["work_demanded"];
           workloadAssignmentModel.classRoutine = workLoadElement["routine"];
 
-          newWorkLoad.add(workloadAssignmentModel);
+          if(workloadAssignmentModel.workloadStatus == "Active") {
+            newWorkLoad.add(workloadAssignmentModel);
+          }
         });
 
         teacherModel.userModel = userModel;
@@ -1090,7 +1170,9 @@ class AppProvider with ChangeNotifier{
           });
 
           //teacherWorkloadModel.studentList = newStudent;
-          newWorkLoad.add(teacherWorkloadModel);
+          if(teacherWorkloadModel.workloadStatus == "Active") {
+            newWorkLoad.add(teacherWorkloadModel);
+          }
           print("___________: Class: ${teacherWorkloadModel.classModel.classId} - Students: ${teacherWorkloadModel.studentList.length}");
         });
 
@@ -1099,11 +1181,11 @@ class AppProvider with ChangeNotifier{
         singleTeacherModel.workloadList = newWorkLoad;
       });
 
-      print("___________: User Id: ${singleTeacherModel.userModel.userId}");
-      print("___________: Department Id: ${singleTeacherModel.departmentModel.departmentId}");
-      print("___________: WorkloadList Length: ${singleTeacherModel.workloadList.length}");
-      print("___________: Student Length: ${singleTeacherModel.workloadList[2].studentList[0].userName}");
-      print("___________: Student Length: ${singleTeacherModel.workloadList[2].studentList[1].userName}");
+      //print("___________: User Id: ${singleTeacherModel.userModel.userId}");
+      //print("___________: Department Id: ${singleTeacherModel.departmentModel.departmentId}");
+      //print("___________: WorkloadList Length: ${singleTeacherModel.workloadList.length}");
+      //print("___________: Student Length: ${singleTeacherModel.workloadList[2].studentList[0].userName}");
+      //print("___________: Student Length: ${singleTeacherModel.workloadList[2].studentList[1].userName}");
 
 
       responseModel = ResponseModel(true, parsedResponse["message"]);
@@ -1166,7 +1248,10 @@ class AppProvider with ChangeNotifier{
         workloadAssignmentModel.workloadStatus = element["status"];
         workloadAssignmentModel.workDemanded = element["work_demanded"];
         workloadAssignmentModel.classRoutine = element["routine"];
-        workloadList.add(workloadAssignmentModel);
+
+        if(workloadAssignmentModel.workloadStatus == "Active") {
+          workloadList.add(workloadAssignmentModel);
+        }
       });
 
       responseModel = ResponseModel(true, parsedResponse["message"]);
@@ -1228,8 +1313,8 @@ class AppProvider with ChangeNotifier{
         workloadAssignmentModel.workDemanded = element["work_demanded"];
         workloadAssignmentModel.classRoutine = element["routine"];
 
-        if(departmentModel.departmentId == model.departmentId) {
-          workloadList.add(workloadAssignmentModel);
+        if(departmentModel.departmentId == model.departmentId && workloadAssignmentModel.workloadStatus == "Active") {
+            workloadList.add(workloadAssignmentModel);
         }
       });
 
@@ -1315,13 +1400,13 @@ class AppProvider with ChangeNotifier{
     return responseModel;
   }
 
-  Future<ResponseModel> fetchAllDateSheets(DepartmentModel model, String token)async{
+  Future<ResponseModel> fetchAllDateSheets(int departmentId, String token)async{
     datesheetProgress = true;
     notifyListeners();
     dateSheetList.clear();
     ResponseModel responseModel;
 
-    ApiResponse apiResponse = await appRepo.fetchAllDateSheets(model, token);
+    ApiResponse apiResponse = await appRepo.fetchAllDateSheets(departmentId, token);
 
     var parsedResponse = json.decode(apiResponse.response!.body);
     Constants.printMessage(Constants.DATESHEET_FETCH, parsedResponse.toString());
@@ -1350,7 +1435,7 @@ class AppProvider with ChangeNotifier{
         datesheetModel.classModel = classModel;
         datesheetModel.roomsModel = roomsModel;
 
-        if(departmentModel.departmentId == model.departmentId) {
+        if(departmentModel.departmentId == departmentId) {
           dateSheetList.add(datesheetModel);
         }
       });
@@ -1435,6 +1520,78 @@ class AppProvider with ChangeNotifier{
       String errorMessage = parsedResponse["message"];
       responseModel = ResponseModel(false, errorMessage);
       dialogProgress = false;
+    }
+    notifyListeners();
+    return responseModel;
+  }
+
+  Future<ResponseModel> addDateSheetPdf(DateSheetUploadModel model, String token)async{
+    uploadProgress = true;
+    notifyListeners();
+    ResponseModel responseModel;
+
+    ApiResponse apiResponse = await appRepo.addDateSheetPdf(model, token);
+
+    var parsedResponse = json.decode(apiResponse.response!.body);
+    Constants.printMessage(Constants.DATESHEET_ADD, parsedResponse.toString());
+
+    if (apiResponse.response != null && parsedResponse["success"]) {
+
+      parsedResponse["data"].forEach((element) {
+        if(element["status"] == "Active"){
+          dateSheetUploadModel = DateSheetUploadModel.getInstance();
+          DepartmentModel departmentModel = DepartmentModel.getInstance();
+          departmentModel = DepartmentModel.fromJson(element["department"]);
+
+          dateSheetUploadModel.dateSheetId = element["id"];
+          dateSheetUploadModel.dateSheetFile = element["file"];
+          dateSheetUploadModel.dateSheetStatus = element["status"];
+          dateSheetUploadModel.dateSheetDate = element["date"];
+          dateSheetUploadModel.departmentModel = departmentModel;
+        }
+      });
+
+      responseModel = ResponseModel(true, parsedResponse["message"]);
+      uploadProgress = false;
+    } else {
+      String errorMessage = parsedResponse["message"];
+      responseModel = ResponseModel(false, errorMessage);
+      uploadProgress = false;
+    }
+    notifyListeners();
+    return responseModel;
+  }
+
+  Future<ResponseModel> fetchDateSheetPdf(String departmentId, String token)async{
+    progress = true;
+    notifyListeners();
+    ResponseModel responseModel;
+
+    ApiResponse apiResponse = await appRepo.fetchDateSheetPdf(departmentId, token);
+
+    var parsedResponse = json.decode(apiResponse.response!.body);
+    Constants.printMessage(Constants.DATESHEET_DELETE, parsedResponse.toString());
+
+    if (apiResponse.response != null && parsedResponse["success"]) {
+
+      parsedResponse["data"].forEach((element) {
+        dateSheetUploadModel = DateSheetUploadModel.getInstance();
+        DepartmentModel departmentModel = DepartmentModel.getInstance();
+        departmentModel = DepartmentModel.fromJson(element["department"]);
+
+        dateSheetUploadModel.dateSheetId = element["id"];
+        dateSheetUploadModel.dateSheetFile = element["file"];
+        dateSheetUploadModel.dateSheetStatus = element["status"];
+        dateSheetUploadModel.dateSheetDate = element["date"];
+        dateSheetUploadModel.departmentModel = departmentModel;
+      });
+
+      responseModel = ResponseModel(true, parsedResponse["message"]);
+      progress = false;
+    } else {
+      String errorMessage = parsedResponse["message"];
+      responseModel = ResponseModel(false, errorMessage);
+      progress = false;
     }
     notifyListeners();
     return responseModel;
@@ -1563,7 +1720,9 @@ class AppProvider with ChangeNotifier{
         attendanceCompleteModel.presentStudents = presentList;
         attendanceCompleteModel.absentStudents = absentList;
 
-        attendanceList.add(attendanceCompleteModel);
+        if(workloadAssignmentModel.workloadStatus == "Active") {
+          attendanceList.add(attendanceCompleteModel);
+        }
       });
 
 
@@ -1574,6 +1733,178 @@ class AppProvider with ChangeNotifier{
       responseModel = ResponseModel(false, errorMessage);
       progress = false;
     }
+    notifyListeners();
+    return responseModel;
+  }
+//----------------------------------------------------------------------------//
+
+  /// TimeTable Provider
+  Future<ResponseModel> addSingleTimeTable(TimeTableUploadModel model, String token)async{
+    progress = true;
+    notifyListeners();
+    ResponseModel responseModel;
+
+    ApiResponse apiResponse = await appRepo.addSingleTimeTable(model, token);
+
+    var parsedResponse = json.decode(apiResponse.response!.body);
+    Constants.printMessage(Constants.SINGLE_TIMETABLE_ADD, parsedResponse.toString());
+
+    if (apiResponse.response != null && parsedResponse["success"]) {
+      responseModel = ResponseModel(true, parsedResponse["message"]);
+      progress = false;
+    } else {
+      String errorMessage = parsedResponse["data"];
+      responseModel = ResponseModel(false, errorMessage);
+      progress = false;
+    }
+    notifyListeners();
+    return responseModel;
+  }
+
+  Future<ResponseModel> addBulkTimeTable(String data, String token)async{
+    progress = true;
+    notifyListeners();
+    ResponseModel responseModel;
+
+    ApiResponse apiResponse = await appRepo.addBulkTimeTable(data, token);
+
+    var parsedResponse = json.decode(apiResponse.response!.body);
+    Constants.printMessage(Constants.BULK_TIMETABLE_ADD, parsedResponse.toString());
+
+    if (apiResponse.response != null && parsedResponse["success"]) {
+      responseModel = ResponseModel(true, parsedResponse["message"]);
+      progress = false;
+    } else {
+      String errorMessage = parsedResponse["message"];
+      responseModel = ResponseModel(false, errorMessage);
+      progress = false;
+    }
+    notifyListeners();
+    return responseModel;
+  }
+
+  Future<ResponseModel> fetchSingleTimeTable(int userId, String token)async{
+    progress = true;
+    teacherTimeTableList.clear();
+    notifyListeners();
+    ResponseModel responseModel;
+
+    ApiResponse apiResponse = await appRepo.fetchSingleTimeTable(userId, token);
+
+    var parsedResponse = json.decode(apiResponse.response!.body);
+    Constants.printMessage(Constants.SINGLE_TIMETABLE_ADD, parsedResponse.toString());
+
+    if (apiResponse.response != null && parsedResponse["success"]) {
+
+      parsedResponse["data"].forEach((element) {
+        UserModel userModel = UserModel.getInstance();
+        userModel.userId = element["id"];
+        userModel.userName = element["name"].toString();
+        userModel.userEmail = element["email"].toString();
+        userModel.userPhone = element["phone"].toString();
+        userModel.userGender = element["gender"].toString();
+        userModel.userImage = element["image"].toString();
+        userModel.userType = element["type"].toString();
+        userModel.userStatus = element["status"].toString();
+        userModel.userAddress = element["address"].toString();
+        userModel.userCnic = element["cnic_no"].toString();
+        if(element["staff"] != "null"){
+          userModel.userExaminationPassedMPhil = "M.Phill";
+          userModel.mPhilPassedExamSubject = element["user"]["staff"]["mPhilPassedExamSubject"].toString();
+          userModel.mPhilPassedExamYear = element["user"]["staff"]["mPhilPassedExamYear"].toString();
+          userModel.mPhilPassedExamDivision = element["user"]["staff"]["mPhilPassedExamDivision"].toString();
+          userModel.mPhilPassedExamInstitute = element["user"]["staff"]["mPhilPassedExamInstitute"].toString();
+          userModel.userExaminationPassedPhd = element["user"]["staff"]["userExaminationPassedPhd"].toString();
+          userModel.phdPassedExamSubject = element["user"]["staff"]["phdPassedExamSubject"].toString();
+          userModel.phdPassedExamYear = element["user"]["staff"]["phdPassedExamYear"].toString();
+          userModel.phdPassedExamDivision = element["user"]["staff"]["phdPassedExamDivision"].toString();
+          userModel.phdPassedExamInstitute = element["user"]["staff"]["phdPassedExamInstitute"].toString();
+          userModel.userSpecializedField = element["user"]["staff"]["userSpecializedField"].toString();
+          userModel.userGraduationLevelExperience = element["user"]["staff"]["userGraduationLevelExperience"].toString();
+          userModel.userPostGraduationLevelExperience = element["user"]["staff"]["userPostGraduationLevelExperience"].toString();
+          userModel.userSignature = element["user"]["staff"]["Signature"].toString();
+          userModel.userDepartment = element["user"]["staff"]["department_id"].toString();
+          userModel.userQualification = element["user"]["staff"]["qualification"].toString();
+          userModel.userDesignation = element["user"]["staff"]["designation"].toString();
+          userModel.totalAllowedCreditHours = int.parse(element["user"]["staff"]["total_allowed_credit_hours"].toString());
+          userModel.userDesignation = element["user"]["staff"]["designation"].toString();
+        }
+
+        WorkloadAssignmentModel workloadAssignmentModel = WorkloadAssignmentModel.getInstance();
+        workloadAssignmentModel.workloadId = element["workloads"]["id"];
+        workloadAssignmentModel.workDemanded = element["workloads"]["work_demanded"];
+        workloadAssignmentModel.workloadStatus = element["workloads"]["status"];
+        workloadAssignmentModel.classRoutine = element["workloads"]["routine"];
+
+        ClassModel classModel = ClassModel.getInstance();
+        classModel.classId = element["workloads"]["department_class"]["id"];
+        classModel.className = element["workloads"]["department_class"]["name"];
+        classModel.classSemester = element["workloads"]["department_class"]["semester"];
+        classModel.classType = element["workloads"]["department_class"]["type"];
+
+        DepartmentModel departmentModel = DepartmentModel.getInstance();
+        departmentModel.departmentId = element["workloads"]["department"]["id"];
+        departmentModel.departmentName = element["workloads"]["department"]["name"];
+        departmentModel.departmentType = element["workloads"]["department"]["type"];
+
+        SubjectModel subjectModel = SubjectModel.getInstance();
+        subjectModel.subjectId = element["workloads"]["subject"]["id"];
+        subjectModel.subjectName = element["workloads"]["subject"]["name"];
+        subjectModel.subjectCode = element["workloads"]["subject"]["code"];
+        subjectModel.creditHours = int.parse(element["workloads"]["subject"]["credit_hour"]);
+
+        workloadAssignmentModel.classModel = classModel;
+        workloadAssignmentModel.departmentModel = departmentModel;
+        workloadAssignmentModel.subjectModel = subjectModel;
+
+        RoomsModel roomsModel = RoomsModel.getInstance();
+        roomsModel.roomId = element["room"]["id"];
+        roomsModel.roomName = element["room"]["name"];
+
+        TimeSlotsModel timeSlotsModel = TimeSlotsModel.getInstance();
+        timeSlotsModel.timeslotId = element["timeslot"]["id"];
+        timeSlotsModel.timeslot = element["timeslot"]["time_slot"];
+
+        TeacherOwnTimeTableModel timeTableModel = TeacherOwnTimeTableModel.getInstance();
+        timeTableModel.timeTableId = element["id"];
+        timeTableModel.workloadId = int.parse(element["workload_id"]);
+        timeTableModel.roomId = int.parse(element["room_id"]);
+        timeTableModel.timeSlotId = int.parse(element["time_slot_id"]);
+        timeTableModel.userId = int.parse(element["user_id"]);
+        timeTableModel.date = element["date"];
+        timeTableModel.day = element["day"];
+        timeTableModel.status = element["status"];
+        timeTableModel.roomsModel = roomsModel;
+        timeTableModel.userModel = userModel;
+        timeTableModel.timeSlotsModel = timeSlotsModel;
+        timeTableModel.workloadAssignmentModel = workloadAssignmentModel;
+
+        if(timeTableModel.status == "Active") {
+          teacherTimeTableList.add(timeTableModel);
+        }
+      });
+
+      responseModel = ResponseModel(true, parsedResponse["message"]);
+      progress = false;
+    } else {
+      String errorMessage = parsedResponse["data"];
+      responseModel = ResponseModel(false, errorMessage);
+      progress = false;
+    }
+    notifyListeners();
+    return responseModel;
+  }
+
+  Future<ResponseModel> checkUploadingData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    ResponseModel responseModel;
+
+    if(prefs.getString("time_table_bulk_data").toString().isEmpty){
+      responseModel = ResponseModel(false, "");
+    }else {
+      responseModel = ResponseModel(true, "");
+    }
+
     notifyListeners();
     return responseModel;
   }

@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:university_management_system/models/subject_model.dart';
+import 'package:university_management_system/ui/admin/datesheet/view_datesheet.dart';
 import 'package:university_management_system/ui/teacher/teacher_attendance/fetch_attendance.dart';
 import 'package:university_management_system/ui/teacher/teacher_subjects/teacher_classes.dart';
 import 'package:university_management_system/widgets/no_data.dart';
@@ -653,9 +654,9 @@ class _DatesheetAssignmentState extends State<DatesheetAssignment> {
                     child: PrimaryButton(
                       width: double.infinity,
                       height: 50,
-                      buttonMargin: const EdgeInsets.only(top: 10, bottom: 30),
+                      buttonMargin: const EdgeInsets.only(top: 10, bottom: 10),
                       buttonPadding: const EdgeInsets.all(12),
-                      buttonText: "View all Datesheets",
+                      buttonText: "Generate Datesheets",
                       buttonTextStyle: AppAssets.latoBold_whiteColor_16,
                       shadowColor: AppAssets.shadowColor,
                       buttonRadius: BorderRadius.circular(30),
@@ -664,6 +665,27 @@ class _DatesheetAssignmentState extends State<DatesheetAssignment> {
                           MyMessage.showFailedMessage("Please Select Department first", context);
                         }else {
                           Navigator.of(context).push(MaterialPageRoute(builder: (context) => FetchDatesheets(departmentModel: dptSelectedValue,)));
+                        }
+                      },
+                    ),
+                  ),
+                  Text("OR"),
+                  Visibility(
+                    visible: !appProvider.progress,
+                    child: PrimaryButton(
+                      width: double.infinity,
+                      height: 50,
+                      buttonMargin: const EdgeInsets.only(top: 10, bottom: 30),
+                      buttonPadding: const EdgeInsets.all(12),
+                      buttonText: "View/Upload Date Sheet",
+                      buttonTextStyle: AppAssets.latoBold_whiteColor_16,
+                      shadowColor: AppAssets.shadowColor,
+                      buttonRadius: BorderRadius.circular(30),
+                      onPress: () {
+                        if(dptSelectedValue.departmentId == 0){
+                          MyMessage.showFailedMessage("Please Select Department first", context);
+                        }else {
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ViewDateSheet(departmentModel: dptSelectedValue,)));
                         }
                       },
                     ),

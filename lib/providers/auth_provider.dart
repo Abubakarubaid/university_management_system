@@ -16,6 +16,7 @@ class AuthProvider with ChangeNotifier{
 
   bool progress = false;
   UserModel userModel = UserModel.getInstance();
+  String authNewToken = "";
 
   /// User Login
   Future<ResponseModel> userLogin(String userEmail, String userPassword)async{
@@ -132,6 +133,76 @@ class AuthProvider with ChangeNotifier{
       progress = false;
     } else {
       String errorMessage = parsedResponse["message"];
+      responseModel = ResponseModel(false, errorMessage);
+      progress = false;
+    }
+    notifyListeners();
+    return responseModel;
+  }
+
+  /// Request Reset Password
+  Future<ResponseModel> requestResetPassword(String email)async{
+    progress = true;
+    notifyListeners();
+    ResponseModel responseModel;
+
+    ApiResponse apiResponse = await authRepo.requestResetPassword(email);
+    var parsedResponse = json.decode(apiResponse.response!.body);
+    Constants.printMessage(Constants.REQUEST_RESET_PASSWORD, parsedResponse.toString());
+
+    if (apiResponse.response != null && parsedResponse["success"] == true) {
+      responseModel = ResponseModel(true, parsedResponse["message"]);
+      progress = false;
+    } else {
+      String errorMessage = parsedResponse["data"];
+      responseModel = ResponseModel(false, errorMessage);
+      progress = false;
+    }
+    notifyListeners();
+    return responseModel;
+  }
+
+  /// Verify Reset Password
+  Future<ResponseModel> verifyResetPassword(String email, String code)async{
+    progress = true;
+    notifyListeners();
+    ResponseModel responseModel;
+
+    authNewToken = "";
+
+    ApiResponse apiResponse = await authRepo.verifyResetPassword(email, code);
+    var parsedResponse = json.decode(apiResponse.response!.body);
+    Constants.printMessage(Constants.VERIFY_RESET_PASSWORD, parsedResponse.toString());
+
+    if (apiResponse.response != null && parsedResponse["success"] == true) {
+
+      authNewToken = parsedResponse["data"]["token"];
+      responseModel = ResponseModel(true, parsedResponse["message"]);
+      progress = false;
+    } else {
+      String errorMessage = parsedResponse["data"];
+      responseModel = ResponseModel(false, errorMessage);
+      progress = false;
+    }
+    notifyListeners();
+    return responseModel;
+  }
+
+  /// Request New Password
+  Future<ResponseModel> requestNewPassword(String password, String token)async{
+    progress = true;
+    notifyListeners();
+    ResponseModel responseModel;
+
+    ApiResponse apiResponse = await authRepo.requestNewPassword(password, token);
+    var parsedResponse = json.decode(apiResponse.response!.body);
+    Constants.printMessage(Constants.REQUEST_NEW_PASSWORD, parsedResponse.toString());
+
+    if (apiResponse.response != null && parsedResponse["success"] == true) {
+      responseModel = ResponseModel(true, parsedResponse["message"]);
+      progress = false;
+    } else {
+      String errorMessage = parsedResponse["data"]["error"];
       responseModel = ResponseModel(false, errorMessage);
       progress = false;
     }

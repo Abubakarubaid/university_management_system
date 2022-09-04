@@ -49,6 +49,13 @@ class Constants{
   static const String ATTENDANCE_ADD = "ATTENDANCE_ADD: ";
   static const String ATTENDANCE_FETCH = "ATTENDANCE_FETCH: ";
 
+  static const String REQUEST_RESET_PASSWORD = "REQUEST_RESET_PASSWORD: ";
+  static const String VERIFY_RESET_PASSWORD = "VERIFY_RESET_PASSWORD: ";
+  static const String REQUEST_NEW_PASSWORD = "REQUEST_NEW_PASSWORD: ";
+
+  static const String SINGLE_TIMETABLE_ADD = "SINGLE_TIMETABLE_ADD: ";
+  static const String BULK_TIMETABLE_ADD = "BULK_TIMETABLE_ADD: ";
+
   static void printMessage(String type, String message){
     print("$type$message");
   }

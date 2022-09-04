@@ -42,10 +42,21 @@ class IPConfigurations{
   static String deleteWorkloadApi = "${serverIp}workloads";
 
   static String addDateSheetApi = "${serverIp}datesheets";
+  static String addDateSheetPdfApi = "${serverIp}datesheetuplods";
   static String fetchDateSheetApi = "${serverIp}datesheets";
+  static String fetchDateSheetPdfApi = "${serverIp}datesheetuplods";
   static String deleteDateSheetApi = "${serverIp}datesheets";
 
   static String addAttendanceApi = "${serverIp}attendences";
   static String fetchAttendanceApi = "${serverIp}attendences";
+
+  static String addTimeTableApi = "${serverIp}timetables";
+  static String addBulkTimeTableApi = "${serverIp}add-bulk-timetable";
+  static String fetchSingleTeacherTimeTableApi = "${serverIp}timetables";
+  static String fetchAllTimeTableApi = "${serverIp}fetch-timetable";
+
+  static String requestResetPasswordApi = "${serverIp}request-password-reset";
+  static String verifyResetPasswordApi = "${serverIp}verify-password-reset";
+  static String requestNewPasswordApi = "${serverIp}request-new-password";
 
 }

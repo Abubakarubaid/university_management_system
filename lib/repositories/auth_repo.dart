@@ -91,4 +91,56 @@ class AuthRepo{
     }
 
   }
+
+  /// Request Reset Password
+  Future<ApiResponse> requestResetPassword(String email)async{
+    ApiResponse apiResponse;
+    var response = await http.post(Uri.parse(IPConfigurations.requestResetPasswordApi),
+        body: {
+          'email': email,
+        });
+    if(response.body.isNotEmpty){
+      apiResponse = ApiResponse(response,null,null);
+      return apiResponse;
+    }else{
+      apiResponse = ApiResponse.withError("Error");
+      return apiResponse;
+    }
+  }
+
+  /// Verify Reset Password
+  Future<ApiResponse> verifyResetPassword(String email, String code)async{
+    ApiResponse apiResponse;
+    var response = await http.post(Uri.parse(IPConfigurations.verifyResetPasswordApi),
+        body: {
+          'email': email,
+          'code': code,
+        });
+    if(response.body.isNotEmpty){
+      apiResponse = ApiResponse(response,null,null);
+      return apiResponse;
+    }else{
+      apiResponse = ApiResponse.withError("Error");
+      return apiResponse;
+    }
+  }
+
+  /// Request New Password
+  Future<ApiResponse> requestNewPassword(String password, String token)async{
+    print("______________: ${token}");
+    ApiResponse apiResponse;
+    var response = await http.post(Uri.parse(IPConfigurations.requestNewPasswordApi),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },body: {
+          'password': password
+        });
+    if(response.body.isNotEmpty){
+      apiResponse = ApiResponse(response,null,null);
+      return apiResponse;
+    }else{
+      apiResponse = ApiResponse.withError("Error");
+      return apiResponse;
+    }
+  }
 }

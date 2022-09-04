@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:university_management_system/models/datesheet_model.dart';
+import 'package:university_management_system/ui/admin/datesheet/pdf/DateSheetPdfPreviewPage.dart';
 import 'package:university_management_system/ui/admin/workload/pdf/PdfPreviewPage.dart';
 import '../../../assets/app_assets.dart';
 import '../../../models/dpt_model.dart';
@@ -30,10 +31,6 @@ class _FetchDatesheetsState extends State<FetchDatesheets> {
 
   var searchController = TextEditingController();
 
-  List<TeacherModel> teacherList = [];
-  TeacherModel teacherSelectedValue = TeacherModel(userModel: UserModel.getInstance(), departmentModel: DepartmentModel.getInstance(), workloadList: []);
-  var teacherItems;
-
   String authToken = "";
   List<DatesheetModel> searchList = [];
 
@@ -47,19 +44,10 @@ class _FetchDatesheetsState extends State<FetchDatesheets> {
     });
 
     getDateSheets();
-    getTeachers();
-  }
-
-  getTeachers() async {
-    Provider.of<AppProvider>(context, listen: false).fetchAllTeachers(false, "teacher", authToken).then((value) {
-      if(value.isSuccess){
-        getDateSheets();
-      }
-    });
   }
 
   getDateSheets() async {
-    Provider.of<AppProvider>(context, listen: false).fetchAllDateSheets(widget.departmentModel, authToken);
+    Provider.of<AppProvider>(context, listen: false).fetchAllDateSheets(widget.departmentModel.departmentId, authToken);
   }
 
   Future<void> _deleteDialog(DatesheetModel model) async {
@@ -349,7 +337,7 @@ class _FetchDatesheetsState extends State<FetchDatesheets> {
                 Expanded(child: Container(padding: const EdgeInsets.only(left: 20, right: 20), child: Center(child: Text("Date Sheets", style: AppAssets.latoBold_textDarkColor_20)))),
                 GestureDetector(
                     onTap: () async {
-                      //Navigator.of(context).push(MaterialPageRoute(builder: (context) => PdfPreviewPage(workloadList: appProvider.dateSheetList, teachersList: appProvider.teacherList,)));
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => DateSheetPdfPreviewPage(dateSheetList: appProvider.dateSheetList,)));
                     },
                     child: Container(padding: const EdgeInsets.all(10), height: 50, width: 50, child: Icon(Icons.picture_as_pdf, color: Colors.blue,))),
               ],),

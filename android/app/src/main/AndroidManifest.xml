@@ -2,14 +2,18 @@
     package="com.example.university_management_system">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
    <application
-        android:label="university_management_system"
+        android:label="LMS by Hafiz Hassan Ubaid"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/app_icon"
+        android:roundIcon="@mipmap/app_icon_round">
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:requestLegacyExternalStorage="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
