@@ -50,7 +50,7 @@ class _AttendanceWorkloadState extends State<AttendanceWorkload> {
   }
 
   getWorkloads() async {
-    Provider.of<AppProvider>(context, listen: false).fetchAllWorkload(widget.departmentModel, authToken);
+    Provider.of<AppProvider>(context, listen: false).fetchAttendanceWorkload(widget.departmentModel, authToken);
   }
 
   @override
@@ -153,7 +153,7 @@ class _AttendanceWorkloadState extends State<AttendanceWorkload> {
                                           child: Row(crossAxisAlignment: CrossAxisAlignment.start,children: [
                                             const Icon(Icons.subject, color: AppAssets.textLightColor,),
                                             const SizedBox(width: 8,),
-                                            Expanded(child: Text(appProvider.workloadList[index].departmentModel.departmentName, style: AppAssets.latoRegular_textDarkColor_14, maxLines: 2, overflow: TextOverflow.ellipsis,)),
+                                            Expanded(child: Text(appProvider.workloadList[index].departmentModel.departmentId == appProvider.workloadList[index].subDepartmentModel.departmentId ? "${appProvider.workloadList[index].subDepartmentModel.departmentName} (own)" : "${appProvider.attendanceList[index].workloadAssignmentModel.subDepartmentModel.departmentName} (other)", style: AppAssets.latoRegular_textDarkColor_14, maxLines: 2, overflow: TextOverflow.ellipsis,)),
                                             const SizedBox(width: 6,),
                                           ],),
                                         ),

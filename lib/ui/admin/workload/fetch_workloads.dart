@@ -47,12 +47,12 @@ class _FetchWorkloadsState extends State<FetchWorkloads> {
       authToken = value;
     });
 
-    getWorkloads();
+    //getWorkloads();
     getTeachers();
   }
 
   getTeachers() async {
-    Provider.of<AppProvider>(context, listen: false).fetchAllTeachers(false, "teacher", authToken).then((value) {
+    Provider.of<AppProvider>(context, listen: false).fetchWorkLoadTeachers(false, "teacher", authToken).then((value) {
       if(value.isSuccess){
         getWorkloads();
       }
@@ -60,7 +60,9 @@ class _FetchWorkloadsState extends State<FetchWorkloads> {
   }
 
   getWorkloads() async {
-    Provider.of<AppProvider>(context, listen: false).fetchAllWorkload(widget.departmentModel, authToken);
+    Provider.of<AppProvider>(context, listen: false).fetchAllWorkload(widget.departmentModel, authToken).then((value) {
+      print("_______________: ${Provider.of<AppProvider>(context, listen: false).workloadList.length}");
+    });
   }
 
   Future<void> _deleteDialog(WorkloadAssignmentModel model) async {

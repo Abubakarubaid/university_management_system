@@ -24,6 +24,8 @@ class _TeacherStudentsState extends State<TeacherStudents> {
 
   var searchController = TextEditingController();
 
+  List<UserModel> searchList = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,11 +44,13 @@ class _TeacherStudentsState extends State<TeacherStudents> {
                       controller: searchController,
                       hint: "Search here",
                       keyboardType: TextInputType.text,
-                      onChange: (text) {}
+                      onChange: onTextChanged
                   ),
                 ),
                 Expanded(
-                  child: widget.teacherWorkloadModel.studentList.isEmpty ? const NoDataFound() :
+                  child: widget.teacherWorkloadModel.studentList.isEmpty ?
+                  const NoDataFound() :
+                  searchList.isEmpty ?
                   ListView.builder(
                       physics: const BouncingScrollPhysics(),
                       itemCount: widget.teacherWorkloadModel.studentList.length,
@@ -93,6 +97,53 @@ class _TeacherStudentsState extends State<TeacherStudents> {
                             Container(height: 1, width: double.infinity, color: AppAssets.textLightColor,),
                           ],),
                         );
+                      }) :
+                  ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: searchList.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          height: 70,
+                          width: double.infinity,
+                          child: Column(children: [
+                            Expanded(
+                              child: Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                Container(
+                                  width: 70,
+                                  height: double.infinity,
+                                  padding: const EdgeInsets.all(12),
+                                  child: Container(
+                                      clipBehavior: Clip.antiAlias,
+                                      width: 50,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                        //border: Border.all(color: AppAssets.textLightColor, width: 1),
+                                          borderRadius: BorderRadius.circular(35)
+                                      ),
+                                      child: SvgPicture.asset(searchList[index].userGender == "female" ? AppAssets.femaleAvatar : AppAssets.maleAvatar, fit: BoxFit.fill, color: AppAssets.textDarkColor,)),
+                                ),
+                                const SizedBox(width: 6,),
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.only(right: 16),
+                                        child: Align(alignment: Alignment.centerLeft, child: Text(searchList[index].userRollNo == "null" ? "" : searchList[index].userRollNo, style: AppAssets.latoBold_textDarkColor_14, maxLines: 1, overflow: TextOverflow.ellipsis,)),
+                                      ),
+                                      const SizedBox(height: 4,),
+                                      Container(
+                                        padding: const EdgeInsets.only(right: 16),
+                                        child: Align(alignment: Alignment.centerLeft, child: Text(searchList[index].userName == "null" ? "" : searchList[index].userName, style: AppAssets.latoRegular_textDarkColor_16, maxLines: 2, overflow: TextOverflow.ellipsis,)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],),
+                            ),
+                            Container(height: 1, width: double.infinity, color: AppAssets.textLightColor,),
+                          ],),
+                        );
                       }),
                 ),
               ],),
@@ -121,5 +172,25 @@ class _TeacherStudentsState extends State<TeacherStudents> {
         ),
       ),
     );
+  }
+
+  onTextChanged(String text) async {
+    print("______: ${text}");
+    setState(() {searchList.clear();});
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
+
+    if(text.toLowerCase().isEmpty){
+      setState(() {searchList.clear();});
+    }
+
+    widget.teacherWorkloadModel.studentList.forEach((data) {
+      if (data.userName.toLowerCase().contains(text.toLowerCase()) ||
+          data.userRollNo.toLowerCase().contains(text.toLowerCase())) {
+        setState(() {searchList.add(data);});
+      }
+    });
   }
 }

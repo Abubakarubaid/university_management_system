@@ -207,6 +207,7 @@ class _ViewStudentsState extends State<ViewStudents> {
                         setState(() {
                          getDepartments(true);
                          getClasses(true);
+                          onTextChanged("");
                         });
                       },
                       child: SizedBox(

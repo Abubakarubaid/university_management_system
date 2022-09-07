@@ -33,6 +33,7 @@ class _FetchTeacherWorkloadState extends State<FetchTeacherWorkload> {
   var searchController = TextEditingController();
 
   String authToken = "";
+  List<WorkloadAssignmentModel> searchList = [];
 
   @override
   void initState() {
@@ -65,12 +66,13 @@ class _FetchTeacherWorkloadState extends State<FetchTeacherWorkload> {
                         controller: searchController,
                         hint: "Search here",
                         keyboardType: TextInputType.text,
-                        onChange: (text) {}
+                        onChange: onTextChanged
                     ),
                   ),
                   Expanded(
                     child: widget.teacherModel.workloadList.isEmpty ?
                     const NoDataFound() :
+                    searchList.isEmpty ?
                     ListView.builder(
                       physics: const BouncingScrollPhysics(),
                       itemCount: widget.teacherModel.workloadList.length,
@@ -137,7 +139,89 @@ class _FetchTeacherWorkloadState extends State<FetchTeacherWorkload> {
                                         child: Row(crossAxisAlignment: CrossAxisAlignment.start,children: [
                                           const Icon(Icons.subject, color: AppAssets.textLightColor,),
                                           const SizedBox(width: 8,),
-                                          Expanded(child: Text(widget.teacherModel.workloadList[index].departmentModel.departmentName, style: AppAssets.latoRegular_textDarkColor_14, maxLines: 2, overflow: TextOverflow.ellipsis,)),
+                                          Expanded(child: Text(widget.teacherModel.workloadList[index].subDepartmentModel.departmentName, style: AppAssets.latoRegular_textDarkColor_14, maxLines: 2, overflow: TextOverflow.ellipsis,)),
+                                          const SizedBox(width: 6,),
+                                        ],),
+                                      ),
+                                    ],),
+                                  )),
+                                  Container(
+                                    width: 10,
+                                    height: double.infinity,
+                                    color: AppAssets.primaryColor,
+                                  ),
+                                ],),
+                              ],),
+                            ),
+                          ),
+                    ) :
+                    ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: searchList.length,
+                      itemBuilder: (context, index) =>
+                          Container(
+                            clipBehavior: Clip.antiAlias,
+                            margin: index == searchList.length-1 ? const EdgeInsets.only(top: 20, bottom: 30) : const EdgeInsets.only(top: 20),
+                            width: double.infinity,
+                            height: 200,
+                            decoration: BoxDecoration(
+                                color: AppAssets.whiteColor,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [BoxShadow(
+                                  spreadRadius: 5,
+                                  blurRadius: 5,
+                                  offset: const Offset(0,3),
+                                  color: AppAssets.shadowColor.withOpacity(0.5),
+                                )]
+                            ),
+                            child: Banner(
+                              location: BannerLocation.topEnd,
+                              message: searchList[index].workDemanded == "Demanded" ? "Demanded" : "Free",
+                              color: searchList[index].workDemanded == "Demanded" ? Colors.red : Colors.green,
+                              child: Stack(children: [
+                                Container(padding: const EdgeInsets.all(20), child: Opacity(opacity: 0.04, child: Align(alignment: Alignment.centerRight, child: Image.asset(AppAssets.workloadIcon,)))),
+                                Row(children: [
+                                  Container(
+                                    width: 10,
+                                    height: double.infinity,
+                                    color: AppAssets.primaryColor,
+                                  ),
+                                  Expanded(child: Container(
+                                    height: double.infinity,
+                                    padding: const EdgeInsets.all(12),
+                                    child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                                      Row(children: [
+                                        const Icon(Icons.class_, color: AppAssets.textLightColor,),
+                                        const SizedBox(width: 8,),
+                                        Expanded(child: Text("${searchList[index].classModel.className} ${searchList[index].classModel.classSemester} ${searchList[index].classModel.classType}", style: AppAssets.latoBold_textDarkColor_16, maxLines: 1, overflow: TextOverflow.ellipsis,)),
+                                      ],),
+                                      const SizedBox(height: 8,),
+                                      Row(children: [
+                                        const SizedBox(width: 6,),
+                                        Text("Subject Code: ", style: AppAssets.latoBold_textDarkColor_14, maxLines: 1, overflow: TextOverflow.ellipsis,),
+                                        const SizedBox(width: 8,),
+                                        Expanded(child: Text(searchList[index].subjectModel.subjectCode, style: AppAssets.latoRegular_textDarkColor_14, maxLines: 1, overflow: TextOverflow.ellipsis,)),
+                                      ],),
+                                      const SizedBox(height: 8,),
+                                      Row(crossAxisAlignment: CrossAxisAlignment.start,children: [
+                                        const SizedBox(width: 6,),
+                                        Text("Subject Name: ", style: AppAssets.latoBold_textDarkColor_14, maxLines: 1, overflow: TextOverflow.ellipsis,),
+                                        const SizedBox(width: 8,),
+                                        Expanded(child: Text(searchList[index].subjectModel.subjectName, style: AppAssets.latoRegular_textDarkColor_14, maxLines: 2, overflow: TextOverflow.ellipsis,)),
+                                      ],),
+                                      const SizedBox(height: 8,),
+                                      Row(children: [
+                                        const SizedBox(width: 6,),
+                                        Text("Teacher: ", style: AppAssets.latoBold_textDarkColor_14, maxLines: 1, overflow: TextOverflow.ellipsis,),
+                                        const SizedBox(width: 8,),
+                                        Expanded(child: Text(searchList[index].userModel.userName, style: AppAssets.latoRegular_textDarkColor_14, maxLines: 1, overflow: TextOverflow.ellipsis,)),
+                                      ],),
+                                      const SizedBox(height: 8,),
+                                      Expanded(
+                                        child: Row(crossAxisAlignment: CrossAxisAlignment.start,children: [
+                                          const Icon(Icons.subject, color: AppAssets.textLightColor,),
+                                          const SizedBox(width: 8,),
+                                          Expanded(child: Text(searchList[index].subDepartmentModel.departmentName, style: AppAssets.latoRegular_textDarkColor_14, maxLines: 2, overflow: TextOverflow.ellipsis,)),
                                           const SizedBox(width: 6,),
                                         ],),
                                       ),
@@ -188,5 +272,28 @@ class _FetchTeacherWorkloadState extends State<FetchTeacherWorkload> {
         ),
       ),
     );
+  }
+
+  onTextChanged(String text) async {
+    print("______: ${text}");
+    setState(() {searchList.clear();});
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
+
+    if(text.toLowerCase().isEmpty){
+      setState(() {searchList.clear();});
+    }
+
+    Provider.of<AppProvider>(context, listen: false).workloadList.forEach((data) {
+      if (data.userModel.userName.toLowerCase().contains(text.toLowerCase()) ||
+          "${data.classModel.className} ${data.classModel.classSemester} ${data.classModel.classType}".toLowerCase().contains(text.toLowerCase()) ||
+          data.subjectModel.subjectCode.toLowerCase().contains(text.toLowerCase()) ||
+          data.subjectModel.subjectName.toLowerCase().contains(text.toLowerCase()) ||
+          data.departmentModel.departmentName.toLowerCase().contains(text.toLowerCase())) {
+        setState(() {searchList.add(data);});
+      }
+    });
   }
 }

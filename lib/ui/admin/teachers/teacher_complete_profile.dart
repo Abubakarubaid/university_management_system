@@ -352,13 +352,13 @@ class _TeacherCompleteProfileState extends State<TeacherCompleteProfile> {
                       width: double.infinity,
                       height: 100,
                       margin: const EdgeInsets.only(left: 30, right: 30, top: 20),
-                      padding: const EdgeInsets.all(8),
+                      //padding: const EdgeInsets.all(8),
                       alignment: Alignment.centerLeft,
                       decoration: BoxDecoration(
                         color: AppAssets.backgroundColor,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Center(child: Image.network(teacherModel.userModel.userSignature == "null" ? "http://redbrickhousenursery.com/wp-content/uploads/2013/11/dummy-image-square.jpg" : "${IPConfigurations.serverImagePath}${teacherModel.userModel.userSignature}"))
+                      child: Center(child: Image.network(teacherModel.userModel.userSignature == "null" ? "http://redbrickhousenursery.com/wp-content/uploads/2013/11/dummy-image-square.jpg" : "${IPConfigurations.serverImagePath}${teacherModel.userModel.userSignature}", fit: BoxFit.cover,))
                   ),
                   Container(
                     width: double.infinity,

@@ -18,8 +18,6 @@ class TeacherWorkload extends StatefulWidget {
 
 class _TeacherWorkloadState extends State<TeacherWorkload> {
 
-  var searchController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
@@ -40,15 +38,6 @@ class _TeacherWorkloadState extends State<TeacherWorkload> {
               margin: const EdgeInsets.only(top: 60, left: 20, right: 20),
               child: Column(
                 children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 20),
-                    child: PrimarySearchFiled(
-                        controller: searchController,
-                        hint: "Search here",
-                        keyboardType: TextInputType.text,
-                        onChange: (text) {}
-                    ),
-                  ),
                   Expanded(
                     child: widget.teacherModel.workloadList.isEmpty ? const NoDataFound() :
                     ListView.builder(
@@ -117,7 +106,7 @@ class _TeacherWorkloadState extends State<TeacherWorkload> {
                                         child: Row(crossAxisAlignment: CrossAxisAlignment.start,children: [
                                           const Icon(Icons.subject, color: AppAssets.textLightColor,),
                                           const SizedBox(width: 8,),
-                                          Expanded(child: Text(widget.teacherModel.workloadList[index].departmentModel.departmentName, style: AppAssets.latoRegular_textDarkColor_14, maxLines: 2, overflow: TextOverflow.ellipsis,)),
+                                          Expanded(child: Text(widget.teacherModel.workloadList[index].departmentModel.departmentId == widget.teacherModel.workloadList[index].subDepartmentModel.departmentId ? "${widget.teacherModel.workloadList[index].subDepartmentModel.departmentName} (own)" : "${widget.teacherModel.workloadList[index].subDepartmentModel.departmentName} (other)", style: AppAssets.latoRegular_textDarkColor_14, maxLines: 2, overflow: TextOverflow.ellipsis,)),
                                         ],),
                                       ),
                                     ],),

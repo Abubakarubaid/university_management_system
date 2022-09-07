@@ -62,7 +62,7 @@ class _TeacherClassesState extends State<TeacherClasses> {
                         Navigator.of(context).push(MaterialPageRoute(builder: (context) => TeacherStudents(teacherWorkloadModel: newWorkloadList[index])));
                       },
                       child: Container(
-                        height: 70,
+                        height: 100,
                         width: double.infinity,
                         child: Column(children: [
                           Expanded(
@@ -85,6 +85,11 @@ class _TeacherClassesState extends State<TeacherClasses> {
                                     Container(
                                       padding: const EdgeInsets.only(right: 16),
                                       child: Align(alignment: Alignment.centerLeft, child: Text(newWorkloadList[index].classModel.classType, style: AppAssets.latoRegular_textDarkColor_16, maxLines: 2, overflow: TextOverflow.ellipsis,)),
+                                    ),
+                                    const SizedBox(height: 4,),
+                                    Container(
+                                      padding: const EdgeInsets.only(right: 16),
+                                      child: Align(alignment: Alignment.centerLeft, child: Text(newWorkloadList[index].departmentModel.departmentId == newWorkloadList[index].subDepartmentModel.departmentId ? "${newWorkloadList[index].subDepartmentModel.departmentName} (own)" : "${newWorkloadList[index].subDepartmentModel.departmentName} (other)", style: AppAssets.latoRegular_textDarkColor_14, maxLines: 2, overflow: TextOverflow.ellipsis,)),
                                     ),
                                   ],
                                 ),

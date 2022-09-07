@@ -39,7 +39,7 @@ _attendanceLayout(List<AttendanceCompleteModel> detailsList, List<UserModel> all
           for(int k=0; k<detailsList.length; k++)
             _fetchAttendance(_combineLists(detailsList[k], detailsList), allStudents[i].userRollNo),
 
-          Expanded(flex: 2, child: Text("${_getPercentage(detailsList, allStudents[i].userRollNo)}", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold), textAlign: TextAlign.center),),
+          Expanded(flex: 2, child: Text("${_getPercentage(detailsList, allStudents[i].userRollNo)}", style: int.parse("${_getPercentage(detailsList, allStudents[i].userRollNo)}") >= 75 ? TextStyle(color: PdfColor.fromHex("008000"), fontSize: 10, fontWeight: FontWeight.bold) : TextStyle(color: PdfColor.fromHex("FF5733"), fontSize: 10, fontWeight: FontWeight.bold), textAlign: TextAlign.center),),
         ]),
       ]);
 }
@@ -94,7 +94,7 @@ _fetchAttendance(List<UserModel> usersList, String userRollNo){
 
   for(int i=0; i<usersList.length; i++){
     if(usersList[i].userRollNo == userRollNo){
-      textWidget = Expanded(child: Text(usersList[i].attendanceStatus == "Present" ? "P" : "A", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold), textAlign: TextAlign.center),);
+      textWidget = Expanded(child: Text(usersList[i].attendanceStatus == "Present" ? "P" : "A", style: usersList[i].attendanceStatus == "Present" ? TextStyle(color: PdfColor.fromHex("008000"), fontSize: 12, fontWeight: FontWeight.bold) : TextStyle(color: PdfColor.fromHex("FF5733"), fontSize: 12, fontWeight: FontWeight.bold), textAlign: TextAlign.center),);
       break;
     }
   }
@@ -103,6 +103,20 @@ _fetchAttendance(List<UserModel> usersList, String userRollNo){
 }
 
 _headerLayout(List<AttendanceCompleteModel> detailsList){
+  List<String> months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+  ];
   return Column(children: [
     Text("Attendance Report", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
     SizedBox(height: 10),
@@ -121,7 +135,7 @@ _headerLayout(List<AttendanceCompleteModel> detailsList){
             Expanded(flex: 6, child: Text("Roll No", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold), textAlign: TextAlign.center),),
 
             for(int i=0; i<detailsList.length; i++)
-              Expanded(child: Text("${DateFormat('yyyy-MM-dd').parse(detailsList[i].attendanceDate).day}\n${DateFormat('yyyy-MM-dd').parse(detailsList[i].attendanceDate).month}", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold), textAlign: TextAlign.center),),
+              Expanded(child: Padding(padding: const EdgeInsets.only(top: 3, bottom: 3), child: Text("${DateFormat('yyyy-MM-dd').parse(detailsList[i].attendanceDate).day}\n${months[DateFormat('yyyy-MM-dd').parse(detailsList[i].attendanceDate).month]}", style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold), textAlign: TextAlign.center),)),
 
             Expanded(flex: 2, child: Text("%", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold), textAlign: TextAlign.center),),
           ]),

@@ -7,6 +7,7 @@ import 'dpt_model.dart';
 
 class TeacherWorkloadModel {
   DepartmentModel departmentModel = DepartmentModel.getInstance();
+  DepartmentModel subDepartmentModel = DepartmentModel.getInstance();
   ClassModel classModel = ClassModel.getInstance();
   SubjectModel subjectModel = SubjectModel.getInstance();
   RoomsModel roomsModel = RoomsModel.getInstance();
@@ -23,6 +24,7 @@ class TeacherWorkloadModel {
   TeacherWorkloadModel({
     required this.workloadId,
     required this.departmentModel,
+    required this.subDepartmentModel,
     required this.classModel,
     required this.subjectModel,
     required this.roomsModel,

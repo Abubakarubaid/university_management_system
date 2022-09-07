@@ -555,6 +555,7 @@ class AppRepo{
         body: {
           "user_id": model.userModel.userId.toString(),
           "department_id": model.departmentModel.departmentId.toString(),
+          "sub_department_id": model.subDepartmentModel.departmentId.toString(),
           "department_class_id": model.classModel.classId.toString(),
           "subject_id": model.subjectModel.subjectId.toString(),
           "work_demanded": model.workDemanded.toString(),

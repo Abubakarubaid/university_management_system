@@ -49,6 +49,10 @@ class _WorkloadAssignmentState extends State<WorkloadAssignment> {
   DepartmentModel dptSelectedValue = DepartmentModel(departmentId: 0, departmentName: "Select Department", departmentType: "Demo");
   var departmentItems;
 
+  List<DepartmentModel> subDepartmentList = [];
+  DepartmentModel subDptSelectedValue = DepartmentModel(departmentId: 0, departmentName: "Select Department", departmentType: "Demo");
+  var subDepartmentItems;
+
   List<ClassModel> classList = [];
   ClassModel classSelectedValue = ClassModel(classId: 0, className: "Select Class", classSemester: "", classType: "", departmentModel: DepartmentModel.getInstance());
   var classItems;
@@ -84,11 +88,20 @@ class _WorkloadAssignmentState extends State<WorkloadAssignment> {
         setState(() {
           if(value.isSuccess){
             departmentList.clear();
+            subDepartmentList.clear();
             departmentList = Provider.of<AppProvider>(context, listen: false).departmentList;
+            subDepartmentList = Provider.of<AppProvider>(context, listen: false).departmentList;
             departmentList.add(dptSelectedValue);
             departmentList.sort((a, b) => a.departmentId.compareTo(b.departmentId));
+            subDepartmentList.sort((a, b) => a.departmentId.compareTo(b.departmentId));
 
             departmentItems = departmentList.map((item) {
+              return DropdownMenuItem<DepartmentModel>(
+                child: Text(item.departmentName),
+                value: item,
+              );
+            }).toList();
+            subDepartmentItems = subDepartmentList.map((item) {
               return DropdownMenuItem<DepartmentModel>(
                 child: Text(item.departmentName),
                 value: item,
@@ -105,6 +118,17 @@ class _WorkloadAssignmentState extends State<WorkloadAssignment> {
               ];
             }else{
               dptSelectedValue = departmentList[0];
+            }
+
+            if (subDepartmentItems.isEmpty) {
+              subDepartmentItems = [
+                DropdownMenuItem(
+                  child: Text(subDptSelectedValue.departmentName),
+                  value: subDptSelectedValue,
+                )
+              ];
+            }else{
+              subDptSelectedValue = subDepartmentList[0];
             }
           }
         });
@@ -258,7 +282,7 @@ class _WorkloadAssignmentState extends State<WorkloadAssignment> {
   void getTeachers(bool specific) async {
     if(!specific) {
       teacherList.clear();
-      Provider.of<AppProvider>(context, listen: false).fetchAllTeachers(true, "teacher",
+      Provider.of<AppProvider>(context, listen: false).fetchWorkLoadTeachers(true, "teacher",
           Constants.getAuthToken().toString()).then((value) {
         setState(() {
           if (value.isSuccess) {
@@ -343,6 +367,12 @@ class _WorkloadAssignmentState extends State<WorkloadAssignment> {
                   Text("Please Select Department, Class, Subject & Teacher to Assign Class and Subject", textAlign: TextAlign.center, style: AppAssets.latoBold_textDarkColor_20,),
                   const SizedBox(height: 30,),
                   Container(
+                    margin: EdgeInsets.only(left: 3, bottom: 6),
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text("Teacher Department:",style: AppAssets.latoRegular_textDarkColor_16, maxLines: 1, overflow: TextOverflow.ellipsis,),),
+                  ),
+                  Container(
                     width: double.infinity,
                     height: 50,
                     padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
@@ -376,6 +406,49 @@ class _WorkloadAssignmentState extends State<WorkloadAssignment> {
                         });
                       },
                       items: departmentItems,
+                    ),
+                  ),
+                  const SizedBox(height: 20,),
+                  Container(
+                    margin: EdgeInsets.only(left: 3, bottom: 6),
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text("Teacher Sub Department:",style: AppAssets.latoRegular_textDarkColor_16, maxLines: 1, overflow: TextOverflow.ellipsis,),),
+                  ),
+                  Container(
+                    width: double.infinity,
+                    height: 50,
+                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppAssets.whiteColor,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppAssets.textLightColor, width: 1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppAssets.shadowColor.withOpacity(0.5),
+                          spreadRadius: 4,
+                          blurRadius: 8,
+                          offset: const Offset(0, 6),
+                        )],
+                    ),
+                    child: DropdownButton<DepartmentModel>(
+                      value: subDptSelectedValue,
+                      icon: const Icon(Icons.arrow_drop_down),
+                      underline: Container(
+                        height: 0,
+                        color: Colors.transparent,
+                      ),
+                      isExpanded: true,
+                      onChanged: (value) {
+                        setState(() {
+                          subDptSelectedValue = value!;
+                          getClasses(true);
+                          getSubjects(true);
+                          getTeachers(true);
+                        });
+                      },
+                      items: subDepartmentItems,
                     ),
                   ),
                   const SizedBox(height: 20,),
@@ -517,6 +590,8 @@ class _WorkloadAssignmentState extends State<WorkloadAssignment> {
                       onPress: () {
                         if(dptSelectedValue.departmentId == 0){
                           MyMessage.showFailedMessage("Please choose Department", context);
+                        }else if(subDptSelectedValue.departmentId == 0){
+                          MyMessage.showFailedMessage("Please choose Sub Department", context);
                         }else if(classSelectedValue.classId == 0){
                           MyMessage.showFailedMessage("Please choose Class", context);
                         }else if(subjectSelectedValue.subjectId == 0){
@@ -531,6 +606,7 @@ class _WorkloadAssignmentState extends State<WorkloadAssignment> {
                           WorkloadAssignmentModel model = WorkloadAssignmentModel.getInstance();
                           model.userModel = teacherSelectedValue.userModel;
                           model.departmentModel = dptSelectedValue;
+                          model.subDepartmentModel = subDptSelectedValue;
                           model.classModel = classSelectedValue;
                           model.subjectModel = subjectSelectedValue;
                           model.workDemanded = demandSelectedValue;

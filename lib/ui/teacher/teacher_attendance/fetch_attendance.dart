@@ -108,7 +108,7 @@ class _FetchAttendanceState extends State<FetchAttendance> {
                                   child: Row(children: [
                                     const Icon(Icons.subject, color: AppAssets.textLightColor,),
                                     const SizedBox(width: 8,),
-                                    Expanded(child: Text(widget.attendanceList[index].workloadAssignmentModel.departmentModel.departmentName, style: AppAssets.latoRegular_textDarkColor_14, maxLines: 2, overflow: TextOverflow.ellipsis,)),
+                                    Expanded(child: Text(widget.attendanceList[index].workloadAssignmentModel.departmentModel.departmentId == widget.attendanceList[index].workloadAssignmentModel.subDepartmentModel.departmentId ? "${widget.attendanceList[index].workloadAssignmentModel.subDepartmentModel.departmentName} (own)" : "${widget.attendanceList[index].workloadAssignmentModel.subDepartmentModel.departmentName} (other)", style: AppAssets.latoRegular_textDarkColor_14, maxLines: 2, overflow: TextOverflow.ellipsis,)),
                                   ],),
                                 ),
                                 const SizedBox(height: 8,),

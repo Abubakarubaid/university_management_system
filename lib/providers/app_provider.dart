@@ -646,6 +646,8 @@ class AppProvider with ChangeNotifier{
         userModel.userImage = element["image"].toString();
         userModel.userType = element["type"].toString();
         userModel.userStatus = element["status"].toString();
+        userModel.userCnic = element["cnic_no"].toString();
+        userModel.userAddress = element["address"].toString();
         userModel.userDepartment = element["student"]["department_id"].toString();
         userModel.userSession = element["student"]["session"].toString();
         userModel.userRollNo = element["student"]["roll_no"].toString();
@@ -854,16 +856,19 @@ class AppProvider with ChangeNotifier{
         element["workloads"].forEach((workLoadElement) {
           workloadAssignmentModel =  WorkloadAssignmentModel.getInstance();
           DepartmentModel departmentModel = DepartmentModel.getInstance();
+          DepartmentModel subDepartmentModel = DepartmentModel.getInstance();
           ClassModel classModel = ClassModel.getInstance();
           SubjectModel subjectModel = SubjectModel.getInstance();
           RoomsModel roomsModel = RoomsModel.getInstance();
 
           departmentModel = DepartmentModel.fromJson(workLoadElement["department"]);
+          subDepartmentModel = DepartmentModel.fromJson(workLoadElement["sub_department"]);
           classModel = ClassModel.fromJson(workLoadElement["department_class"]);
           subjectModel = SubjectModel.fromJson(workLoadElement["subject"]);
 
           workloadAssignmentModel.userModel = userModel;
           workloadAssignmentModel.departmentModel = departmentModel;
+          workloadAssignmentModel.subDepartmentModel = subDepartmentModel;
           workloadAssignmentModel.subjectModel = subjectModel;
           workloadAssignmentModel.classModel = classModel;
           workloadAssignmentModel.roomsModel = roomsModel;
@@ -883,6 +888,133 @@ class AppProvider with ChangeNotifier{
         teacherModel.workloadList = newWorkLoad;
 
         teacherList.add(teacherModel);
+      });
+
+      responseModel = ResponseModel(true, parsedResponse["message"]);
+      studentProgress = false;
+    } else {
+      String errorMessage = parsedResponse["message"];
+      responseModel = ResponseModel(false, errorMessage);
+      studentProgress = false;
+    }
+    if(notify) {
+      notifyListeners();
+    }
+    return responseModel;
+  }
+
+  Future<ResponseModel> fetchWorkLoadTeachers(bool notify, String type, String token)async{
+    studentProgress = true;
+    if(notify) {
+      notifyListeners();
+    }
+    ResponseModel responseModel;
+
+    teacherList = [];
+
+    ApiResponse apiResponse = await appRepo.fetchAllTeachers(type, token);
+
+    var parsedResponse = json.decode(apiResponse.response!.body);
+    Constants.printMessage(Constants.TEACHER_FETCH, parsedResponse.toString());
+
+    if (apiResponse.response != null && parsedResponse["success"]) {
+
+      parsedResponse["data"].forEach((element) {
+        TeacherModel teacherModel = TeacherModel.getInstance();
+        UserModel userModel = UserModel.getInstance();
+        DepartmentModel departmentModel = DepartmentModel.getInstance();
+        WorkloadAssignmentModel workloadAssignmentModel = WorkloadAssignmentModel.getInstance();
+
+        userModel.userId = element["id"];
+        userModel.userName = element["name"].toString();
+        userModel.userEmail = element["email"].toString();
+        userModel.userPhone = element["phone"].toString();
+        userModel.userGender = element["gender"].toString();
+        userModel.userImage = element["image"].toString();
+        userModel.userType = element["type"].toString();
+        userModel.userStatus = element["status"].toString();
+        userModel.userAddress = element["address"].toString();
+        userModel.userCnic = element["cnic_no"].toString();
+        if(element["staff"].toString() != "null") {
+          userModel.userExaminationPassedMPhil =
+              element["staff"]["userExaminationPassedMPhil"].toString();
+          userModel.mPhilPassedExamSubject =
+              element["staff"]["mPhilPassedExamSubject"].toString();
+          userModel.mPhilPassedExamYear =
+              element["staff"]["mPhilPassedExamYear"].toString();
+          userModel.mPhilPassedExamDivision =
+              element["staff"]["mPhilPassedExamDivision"].toString();
+          userModel.mPhilPassedExamInstitute =
+              element["staff"]["mPhilPassedExamInstitute"].toString();
+          userModel.userExaminationPassedPhd =
+              element["staff"]["userExaminationPassedPhd"].toString();
+          userModel.phdPassedExamSubject =
+              element["staff"]["phdPassedExamSubject"].toString();
+          userModel.phdPassedExamYear =
+              element["staff"]["phdPassedExamYear"].toString();
+          userModel.phdPassedExamDivision =
+              element["staff"]["phdPassedExamDivision"].toString();
+          userModel.phdPassedExamInstitute =
+              element["staff"]["phdPassedExamInstitute"].toString();
+          userModel.userSpecializedField =
+              element["staff"]["userSpecializedField"].toString();
+          userModel.userGraduationLevelExperience =
+              element["staff"]["userGraduationLevelExperience"].toString();
+          userModel.userPostGraduationLevelExperience =
+              element["staff"]["userPostGraduationLevelExperience"].toString();
+          userModel.userSignature = element["staff"]["Signature"].toString();
+          userModel.userDepartment =
+              element["staff"]["department_id"].toString();
+          userModel.userQualification =
+              element["staff"]["qualification"].toString();
+          userModel.userDesignation =
+              element["staff"]["designation"].toString();
+          userModel.totalAllowedCreditHours = int.parse(
+              element["staff"]["total_allowed_credit_hours"].toString());
+          userModel.userDesignation =
+              element["staff"]["designation"].toString();
+
+          departmentModel = DepartmentModel.fromJson(element["staff"]["department"]);
+        }
+
+        List<WorkloadAssignmentModel> newWorkLoad = [];
+        element["workloads"].forEach((workLoadElement) {
+          workloadAssignmentModel =  WorkloadAssignmentModel.getInstance();
+          DepartmentModel departmentModel = DepartmentModel.getInstance();
+          DepartmentModel subDepartmentModel = DepartmentModel.getInstance();
+          ClassModel classModel = ClassModel.getInstance();
+          SubjectModel subjectModel = SubjectModel.getInstance();
+          RoomsModel roomsModel = RoomsModel.getInstance();
+
+          departmentModel = DepartmentModel.fromJson(workLoadElement["department"]);
+          subDepartmentModel = DepartmentModel.fromJson(workLoadElement["sub_department"]);
+          classModel = ClassModel.fromJson(workLoadElement["department_class"]);
+          subjectModel = SubjectModel.fromJson(workLoadElement["subject"]);
+
+          workloadAssignmentModel.userModel = userModel;
+          workloadAssignmentModel.departmentModel = departmentModel;
+          workloadAssignmentModel.subDepartmentModel = subDepartmentModel;
+          workloadAssignmentModel.subjectModel = subjectModel;
+          workloadAssignmentModel.classModel = classModel;
+          workloadAssignmentModel.roomsModel = roomsModel;
+
+          workloadAssignmentModel.workloadId = workLoadElement["id"];
+          workloadAssignmentModel.workloadStatus = workLoadElement["status"];
+          workloadAssignmentModel.workDemanded = workLoadElement["work_demanded"];
+          workloadAssignmentModel.classRoutine = workLoadElement["routine"];
+
+          if(workloadAssignmentModel.workloadStatus == "Active") {
+            newWorkLoad.add(workloadAssignmentModel);
+          }
+        });
+
+        teacherModel.userModel = userModel;
+        teacherModel.departmentModel = departmentModel;
+        teacherModel.workloadList = newWorkLoad;
+
+        if(teacherModel.userModel.userStatus == "active") {
+          teacherList.add(teacherModel);
+        }
       });
 
       responseModel = ResponseModel(true, parsedResponse["message"]);
@@ -1131,15 +1263,18 @@ class AppProvider with ChangeNotifier{
         element["workloads"].forEach((workLoadElement) {
           teacherWorkloadModel =  TeacherWorkloadModel.getInstance();
           DepartmentModel departmentModel = DepartmentModel.getInstance();
+          DepartmentModel subDepartmentModel = DepartmentModel.getInstance();
           ClassModel classModel = ClassModel.getInstance();
           SubjectModel subjectModel = SubjectModel.getInstance();
           RoomsModel roomsModel = RoomsModel.getInstance();
 
           departmentModel = DepartmentModel.fromJson(workLoadElement["department"]);
+          subDepartmentModel = DepartmentModel.fromJson(workLoadElement["sub_department"]);
           classModel = ClassModel.fromJson(workLoadElement["department_class"]);
           subjectModel = SubjectModel.fromJson(workLoadElement["subject"]);
 
           teacherWorkloadModel.departmentModel = departmentModel;
+          teacherWorkloadModel.subDepartmentModel = subDepartmentModel;
           teacherWorkloadModel.subjectModel = subjectModel;
           teacherWorkloadModel.classModel = classModel;
           teacherWorkloadModel.roomsModel = roomsModel;
@@ -1218,6 +1353,7 @@ class AppProvider with ChangeNotifier{
         WorkloadAssignmentModel workloadAssignmentModel =  WorkloadAssignmentModel.getInstance();
         UserModel userModel = UserModel.getInstance();
         DepartmentModel departmentModel = DepartmentModel.getInstance();
+        DepartmentModel subDepartmentModel = DepartmentModel.getInstance();
         ClassModel classModel = ClassModel.getInstance();
         SubjectModel subjectModel = SubjectModel.getInstance();
         RoomsModel roomsModel = RoomsModel.getInstance();
@@ -1235,11 +1371,13 @@ class AppProvider with ChangeNotifier{
         userModel.userDesignation = element["user"]["staff"]["designation"].toString();
         userModel.totalAllowedCreditHours = int.parse(element["user"]["staff"]["total_allowed_credit_hours"].toString());
         departmentModel = DepartmentModel.fromJson(element["department"]);
+        subDepartmentModel = DepartmentModel.fromJson(element["sub_department"]);
         classModel = ClassModel.fromJson(element["department_class"]);
         subjectModel = SubjectModel.fromJson(element["subject"]);
 
         workloadAssignmentModel.userModel = userModel;
         workloadAssignmentModel.departmentModel = departmentModel;
+        workloadAssignmentModel.subDepartmentModel = subDepartmentModel;
         workloadAssignmentModel.subjectModel = subjectModel;
         workloadAssignmentModel.classModel = classModel;
         workloadAssignmentModel.roomsModel = roomsModel;
@@ -1257,7 +1395,7 @@ class AppProvider with ChangeNotifier{
       responseModel = ResponseModel(true, parsedResponse["message"]);
       progress = false;
     } else {
-      String errorMessage = parsedResponse["message"];
+      String errorMessage = parsedResponse["data"];
       responseModel = ResponseModel(false, errorMessage);
       progress = false;
     }
@@ -1282,6 +1420,7 @@ class AppProvider with ChangeNotifier{
         WorkloadAssignmentModel workloadAssignmentModel =  WorkloadAssignmentModel.getInstance();
         UserModel userModel = UserModel.getInstance();
         DepartmentModel departmentModel = DepartmentModel.getInstance();
+        DepartmentModel subDepartmentModel = DepartmentModel.getInstance();
         ClassModel classModel = ClassModel.getInstance();
         SubjectModel subjectModel = SubjectModel.getInstance();
         RoomsModel roomsModel = RoomsModel.getInstance();
@@ -1299,11 +1438,13 @@ class AppProvider with ChangeNotifier{
         userModel.userDesignation = element["user"]["staff"]["designation"].toString();
         userModel.totalAllowedCreditHours = int.parse(element["user"]["staff"]["total_allowed_credit_hours"].toString());
         departmentModel = DepartmentModel.fromJson(element["department"]);
+        subDepartmentModel = DepartmentModel.fromJson(element["sub_department"]);
         classModel = ClassModel.fromJson(element["department_class"]);
         subjectModel = SubjectModel.fromJson(element["subject"]);
 
         workloadAssignmentModel.userModel = userModel;
         workloadAssignmentModel.departmentModel = departmentModel;
+        workloadAssignmentModel.subDepartmentModel = subDepartmentModel;
         workloadAssignmentModel.subjectModel = subjectModel;
         workloadAssignmentModel.classModel = classModel;
         workloadAssignmentModel.roomsModel = roomsModel;
@@ -1315,6 +1456,73 @@ class AppProvider with ChangeNotifier{
 
         if(departmentModel.departmentId == model.departmentId && workloadAssignmentModel.workloadStatus == "Active") {
             workloadList.add(workloadAssignmentModel);
+        }
+      });
+
+      responseModel = ResponseModel(true, parsedResponse["message"]);
+      progress = false;
+    } else {
+      String errorMessage = parsedResponse["message"];
+      responseModel = ResponseModel(false, errorMessage);
+      progress = false;
+    }
+    notifyListeners();
+    return responseModel;
+  }
+
+  Future<ResponseModel> fetchAttendanceWorkload(DepartmentModel model, String token)async{
+    progress = true;
+    notifyListeners();
+    workloadList.clear();
+    ResponseModel responseModel;
+
+    ApiResponse apiResponse = await appRepo.fetchAllWorkload(model, token);
+
+    var parsedResponse = json.decode(apiResponse.response!.body);
+    Constants.printMessage(Constants.WORKLOAD_FETCH, parsedResponse.toString());
+
+    if (apiResponse.response != null && parsedResponse["success"]) {
+
+      parsedResponse["data"].forEach((element) {
+        WorkloadAssignmentModel workloadAssignmentModel =  WorkloadAssignmentModel.getInstance();
+        UserModel userModel = UserModel.getInstance();
+        DepartmentModel departmentModel = DepartmentModel.getInstance();
+        DepartmentModel subDepartmentModel = DepartmentModel.getInstance();
+        ClassModel classModel = ClassModel.getInstance();
+        SubjectModel subjectModel = SubjectModel.getInstance();
+        RoomsModel roomsModel = RoomsModel.getInstance();
+
+        userModel.userId = element["user"]["id"];
+        userModel.userName = element["user"]["name"].toString();
+        userModel.userEmail = element["user"]["email"].toString();
+        userModel.userPhone = element["user"]["phone"].toString();
+        userModel.userGender = element["user"]["gender"].toString();
+        userModel.userImage = element["user"]["image"].toString();
+        userModel.userType = element["user"]["type"].toString();
+        userModel.userStatus = element["user"]["status"].toString();
+        userModel.userDepartment = element["user"]["staff"]["department_id"].toString();
+        userModel.userQualification = element["user"]["staff"]["qualification"].toString();
+        userModel.userDesignation = element["user"]["staff"]["designation"].toString();
+        userModel.totalAllowedCreditHours = int.parse(element["user"]["staff"]["total_allowed_credit_hours"].toString());
+        departmentModel = DepartmentModel.fromJson(element["department"]);
+        subDepartmentModel = DepartmentModel.fromJson(element["sub_department"]);
+        classModel = ClassModel.fromJson(element["department_class"]);
+        subjectModel = SubjectModel.fromJson(element["subject"]);
+
+        workloadAssignmentModel.userModel = userModel;
+        workloadAssignmentModel.departmentModel = departmentModel;
+        workloadAssignmentModel.subDepartmentModel = subDepartmentModel;
+        workloadAssignmentModel.subjectModel = subjectModel;
+        workloadAssignmentModel.classModel = classModel;
+        workloadAssignmentModel.roomsModel = roomsModel;
+
+        workloadAssignmentModel.workloadId = element["id"];
+        workloadAssignmentModel.workloadStatus = element["status"];
+        workloadAssignmentModel.workDemanded = element["work_demanded"];
+        workloadAssignmentModel.classRoutine = element["routine"];
+
+        if(subDepartmentModel.departmentId == model.departmentId && workloadAssignmentModel.workloadStatus == "Active") {
+          workloadList.add(workloadAssignmentModel);
         }
       });
 
@@ -1685,6 +1893,7 @@ class AppProvider with ChangeNotifier{
         WorkloadAssignmentModel workloadAssignmentModel = WorkloadAssignmentModel.getInstance();
         UserModel userModel = UserModel.getInstance();
         DepartmentModel departmentModel = DepartmentModel.getInstance();
+        DepartmentModel subDepartmentModel = DepartmentModel.getInstance();
         ClassModel classModel = ClassModel.getInstance();
         SubjectModel subjectModel = SubjectModel.getInstance();
         RoomsModel roomsModel = RoomsModel.getInstance();
@@ -1702,11 +1911,13 @@ class AppProvider with ChangeNotifier{
         userModel.userDesignation = element["workloads"]["user"]["staff"]["designation"].toString();
         userModel.totalAllowedCreditHours = int.parse(element["workloads"]["user"]["staff"]["total_allowed_credit_hours"].toString());
         departmentModel = DepartmentModel.fromJson(element["workloads"]["department"]);
+        subDepartmentModel = DepartmentModel.fromJson(element["workloads"]["sub_department"]);
         classModel = ClassModel.fromJson(element["workloads"]["department_class"]);
         subjectModel = SubjectModel.fromJson(element["workloads"]["subject"]);
 
         workloadAssignmentModel.userModel = userModel;
         workloadAssignmentModel.departmentModel = departmentModel;
+        workloadAssignmentModel.subDepartmentModel = subDepartmentModel;
         workloadAssignmentModel.subjectModel = subjectModel;
         workloadAssignmentModel.classModel = classModel;
         workloadAssignmentModel.roomsModel = roomsModel;

@@ -11,16 +11,21 @@ Future<Uint8List> makePdf(List<WorkloadAssignmentModel> workloadList, List<Teach
   final pdf = Document();
   final imageLogo = MemoryImage((await rootBundle.load(AppAssets.attendanceColoredIcon)).buffer.asUint8List());
 
+  print("_________________: Length: ${workloadList.length}");
+
+  final numberOfPages = (workloadList.length / 20).ceil();
+  print("_________________: numberOfPages: ${numberOfPages}");
+
   pdf.addPage(
-    MultiPage(pageTheme:
-    const PageTheme(orientation: PageOrientation.landscape,),
-        build: (context) {
-          return <Widget> [
-            _headerLayout(workloadList),
-            for(int i=0; i<teachersList.length; i++)
-              _fetchSingleTeacher(workloadList, teachersList[i].userModel.userId),
-          ];
-        })
+    MultiPage(
+      pageTheme: const PageTheme(orientation: PageOrientation.landscape,),
+      build: (context) {
+        return <Widget> [
+          _headerLayout(workloadList),
+          for(int i=0; i<teachersList.length; i++)
+            _fetchSingleTeacher(workloadList, teachersList[i].userModel.userId),
+        ];
+      }),
   );
   return pdf.save();
 }

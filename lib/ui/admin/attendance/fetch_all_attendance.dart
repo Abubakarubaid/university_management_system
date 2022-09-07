@@ -132,7 +132,7 @@ class _FetchAllAttendanceState extends State<FetchAllAttendance> {
                                   child: Row(children: [
                                     const Icon(Icons.subject, color: AppAssets.textLightColor,),
                                     const SizedBox(width: 8,),
-                                    Expanded(child: Text(appProvider.attendanceList[index].workloadAssignmentModel.departmentModel.departmentName, style: AppAssets.latoRegular_textDarkColor_14, maxLines: 2, overflow: TextOverflow.ellipsis,)),
+                                    Expanded(child: Text(appProvider.attendanceList[index].workloadAssignmentModel.departmentModel.departmentId == appProvider.attendanceList[index].workloadAssignmentModel.subDepartmentModel.departmentId ? "${appProvider.attendanceList[index].workloadAssignmentModel.subDepartmentModel.departmentName} (own)" : "${appProvider.attendanceList[index].workloadAssignmentModel.subDepartmentModel.departmentName} (other)", style: AppAssets.latoRegular_textDarkColor_14, maxLines: 2, overflow: TextOverflow.ellipsis,)),
                                   ],),
                                 ),
                                 const SizedBox(height: 8,),

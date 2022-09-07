@@ -137,7 +137,7 @@ class _AdminProfileState extends State<AdminProfile> {
                       const SizedBox(width: 10,),
                       Text(userModel.userEmail, style: AppAssets.latoRegular_textDarkColor_16, maxLines: 2, overflow: TextOverflow.ellipsis,),
                     ],),
-                ),
+                ),/*
                 Container(
                   width: double.infinity,
                   height: 60,
@@ -154,7 +154,7 @@ class _AdminProfileState extends State<AdminProfile> {
                       const SizedBox(width: 10,),
                       Text(userModel.userPassword, style: AppAssets.latoRegular_textDarkColor_16, maxLines: 2, overflow: TextOverflow.ellipsis,),
                     ],),
-                ),
+                ),*/
                 Container(
                   width: double.infinity,
                   height: 60,

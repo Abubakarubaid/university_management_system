@@ -62,8 +62,9 @@ class _TeacherAttendanceState extends State<TeacherAttendance> {
 
       departmentList.add(dptSelectedValue);
       widget.teacherModel.workloadList.forEach((element) {
-        if(departmentList.where((c) => c.departmentId == element.departmentModel.departmentId).toList().isEmpty) {
-          departmentList.add(element.departmentModel);
+        int count = departmentList.where((c) => c.departmentId == element.subDepartmentModel.departmentId).toList().length;
+        if(count == 0) {
+          departmentList.add(element.subDepartmentModel);
         }
       });
 
@@ -100,7 +101,10 @@ class _TeacherAttendanceState extends State<TeacherAttendance> {
 
       classList.add(classSelectedValue);
       widget.teacherModel.workloadList.forEach((element) {
-        classList.add(element.classModel);
+        int count = classList.where((c) => c.classId == element.classModel.classId).toList().length;
+        if(count == 0) {
+          classList.add(element.classModel);
+        }
       });
 
       classItems = classList.map((item) {
@@ -129,8 +133,11 @@ class _TeacherAttendanceState extends State<TeacherAttendance> {
 
         List<ClassModel> searchedList = [];
         widget.teacherModel.workloadList.forEach((element) {
-          if(dptSelectedValue.departmentId == element.departmentModel.departmentId){
-            searchedList.add(element.classModel);
+          if(dptSelectedValue.departmentId == element.subDepartmentModel.departmentId){
+            int count = searchedList.where((c) => c.classId == element.classModel.classId).toList().length;
+            if(count == 0) {
+              searchedList.add(element.classModel);
+            }
           }
         });
 

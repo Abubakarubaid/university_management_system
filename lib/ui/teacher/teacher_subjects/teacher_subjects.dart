@@ -19,10 +19,25 @@ class TeacherSubjects extends StatefulWidget {
 
 class _TeacherSubjectsState extends State<TeacherSubjects> {
 
+  List<SubjectModel> subjectList = [];
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    getSubjects();
+  }
+
+  void getSubjects(){
+    subjectList.clear();
+    widget.teacherModel.workloadList.forEach((element) {
+      int count = subjectList.where((c) => c.subjectId == element.subjectModel.subjectId).toList().length;
+
+      if(count == 0) {
+        subjectList.add(element.subjectModel);
+      }
+    });
   }
 
   @override
@@ -36,10 +51,10 @@ class _TeacherSubjectsState extends State<TeacherSubjects> {
           child: Stack(children: [
             Container(
               margin: const EdgeInsets.only(top: 60),
-              child: widget.teacherModel.workloadList.isEmpty ? const NoDataFound() :
+              child: subjectList.isEmpty ? const NoDataFound() :
               ListView.builder(
                   physics: const BouncingScrollPhysics(),
-                  itemCount: widget.teacherModel.workloadList.length,
+                  itemCount: subjectList.length,
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () {
@@ -63,12 +78,12 @@ class _TeacherSubjectsState extends State<TeacherSubjects> {
                                   children: [
                                     Container(
                                       padding: const EdgeInsets.only(right: 16),
-                                      child: Align(alignment: Alignment.centerLeft, child: Text(widget.teacherModel.workloadList[index].subjectModel.subjectCode, style: AppAssets.latoBold_textDarkColor_14, maxLines: 1, overflow: TextOverflow.ellipsis,)),
+                                      child: Align(alignment: Alignment.centerLeft, child: Text(subjectList[index].subjectCode, style: AppAssets.latoBold_textDarkColor_14, maxLines: 1, overflow: TextOverflow.ellipsis,)),
                                     ),
                                     const SizedBox(height: 4,),
                                     Container(
                                       padding: const EdgeInsets.only(right: 16),
-                                      child: Align(alignment: Alignment.centerLeft, child: Text(widget.teacherModel.workloadList[index].subjectModel.subjectName, style: AppAssets.latoRegular_textDarkColor_16, maxLines: 2, overflow: TextOverflow.ellipsis,)),
+                                      child: Align(alignment: Alignment.centerLeft, child: Text(subjectList[index].subjectName, style: AppAssets.latoRegular_textDarkColor_16, maxLines: 2, overflow: TextOverflow.ellipsis,)),
                                     ),
                                     const SizedBox(height: 4,),
                                     Container(
@@ -76,7 +91,7 @@ class _TeacherSubjectsState extends State<TeacherSubjects> {
                                       child: Row(
                                         children: [
                                           Align(alignment: Alignment.centerLeft, child: Text("Credit Hours: ", style: AppAssets.latoBold_textDarkColor_14, maxLines: 1, overflow: TextOverflow.ellipsis,)),
-                                          Align(alignment: Alignment.centerLeft, child: Text(widget.teacherModel.workloadList[index].subjectModel.creditHours.toString(), style: AppAssets.latoRegular_textDarkColor_16, maxLines: 1, overflow: TextOverflow.ellipsis,)),
+                                          Align(alignment: Alignment.centerLeft, child: Text(subjectList[index].creditHours.toString(), style: AppAssets.latoRegular_textDarkColor_16, maxLines: 1, overflow: TextOverflow.ellipsis,)),
                                         ],
                                       ),
                                     ),
