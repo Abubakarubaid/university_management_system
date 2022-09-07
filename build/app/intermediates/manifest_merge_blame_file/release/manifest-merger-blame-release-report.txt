@@ -1,0 +1,214 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.university_management_system"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="21"
+8-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml
+9        android:targetSdkVersion="31" />
+9-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:4:5-66
+11-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:4:22-64
+12    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+12-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:5:5-80
+12-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:5:22-77
+13    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+13-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:6:5-80
+13-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:6:22-78
+14
+15    <queries>
+15-->[:file_picker] /Users/shark/AndroidStudioProjects/university_management_system/build/file_picker/intermediates/merged_manifest/release/AndroidManifest.xml:11:5-17:15
+16        <intent>
+16-->[:file_picker] /Users/shark/AndroidStudioProjects/university_management_system/build/file_picker/intermediates/merged_manifest/release/AndroidManifest.xml:12:9-16:18
+17            <action android:name="android.intent.action.GET_CONTENT" />
+17-->[:file_picker] /Users/shark/AndroidStudioProjects/university_management_system/build/file_picker/intermediates/merged_manifest/release/AndroidManifest.xml:13:13-72
+17-->[:file_picker] /Users/shark/AndroidStudioProjects/university_management_system/build/file_picker/intermediates/merged_manifest/release/AndroidManifest.xml:13:21-69
+18
+19            <data android:mimeType="*/*" />
+19-->[:file_picker] /Users/shark/AndroidStudioProjects/university_management_system/build/file_picker/intermediates/merged_manifest/release/AndroidManifest.xml:15:13-44
+19-->[:file_picker] /Users/shark/AndroidStudioProjects/university_management_system/build/file_picker/intermediates/merged_manifest/release/AndroidManifest.xml:15:19-41
+20        </intent>
+21    </queries>
+22
+23    <application
+24        android:name="android.app.Application"
+24-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:10:9-42
+25        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+25-->[androidx.core:core:1.8.0] /Users/shark/.gradle/caches/transforms-3/d363e3b5616f580c766e3e2b3c05f27d/transformed/core-1.8.0/AndroidManifest.xml:24:18-86
+26        android:icon="@mipmap/app_icon"
+26-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:11:9-40
+27        android:label="LMS by Hafiz Hassan Ubaid"
+27-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:9:9-50
+28        android:roundIcon="@mipmap/app_icon_round" >
+28-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:12:9-51
+29        <activity
+29-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:13:9-34:20
+30            android:name="com.example.university_management_system.MainActivity"
+30-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:14:13-41
+31            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+31-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:19:13-163
+32            android:exported="true"
+32-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:15:13-36
+33            android:hardwareAccelerated="true"
+33-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:20:13-47
+34            android:launchMode="singleTop"
+34-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:17:13-43
+35            android:requestLegacyExternalStorage="true"
+35-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:16:13-56
+36            android:theme="@style/LaunchTheme"
+36-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:18:13-47
+37            android:windowSoftInputMode="adjustResize" >
+37-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:21:13-55
+38
+39            <!--
+40                 Specifies an Android theme to apply to this Activity as soon as
+41                 the Android process has started. This theme is visible to the user
+42                 while the Flutter UI initializes. After that, this theme continues
+43                 to determine the Window background behind the Flutter UI.
+44            -->
+45            <meta-data
+45-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:26:13-29:17
+46                android:name="io.flutter.embedding.android.NormalTheme"
+46-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:27:15-70
+47                android:resource="@style/NormalTheme" />
+47-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:28:15-52
+48
+49            <intent-filter>
+49-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:30:13-33:29
+50                <action android:name="android.intent.action.MAIN" />
+50-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:31:17-68
+50-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:31:25-66
+51
+52                <category android:name="android.intent.category.LAUNCHER" />
+52-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:32:17-76
+52-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:32:27-74
+53            </intent-filter>
+54        </activity>
+55        <!--
+56             Don't delete the meta-data below.
+57             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java
+58        -->
+59        <meta-data
+59-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:37:9-39:33
+60            android:name="flutterEmbedding"
+60-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:38:13-44
+61            android:value="2" />
+61-->/Users/shark/AndroidStudioProjects/university_management_system/android/app/src/main/AndroidManifest.xml:39:13-30
+62
+63        <service
+63-->[:firebase_core] /Users/shark/AndroidStudioProjects/university_management_system/build/firebase_core/intermediates/merged_manifest/release/AndroidManifest.xml:10:9-14:19
+64            android:name="com.google.firebase.components.ComponentDiscoveryService"
+64-->[:firebase_core] /Users/shark/AndroidStudioProjects/university_management_system/build/firebase_core/intermediates/merged_manifest/release/AndroidManifest.xml:10:18-89
+65            android:directBootAware="true"
+65-->[com.google.firebase:firebase-common:20.1.1] /Users/shark/.gradle/caches/transforms-3/38e97678fc0b2269e99f6580e70ed26a/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:35:13-43
+66            android:exported="false" >
+66-->[com.google.firebase:firebase-common:20.1.1] /Users/shark/.gradle/caches/transforms-3/38e97678fc0b2269e99f6580e70ed26a/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:36:13-37
+67            <meta-data
+67-->[:firebase_core] /Users/shark/AndroidStudioProjects/university_management_system/build/firebase_core/intermediates/merged_manifest/release/AndroidManifest.xml:11:13-13:85
+68                android:name="com.google.firebase.components:io.flutter.plugins.firebase.core.FlutterFirebaseCoreRegistrar"
+68-->[:firebase_core] /Users/shark/AndroidStudioProjects/university_management_system/build/firebase_core/intermediates/merged_manifest/release/AndroidManifest.xml:12:17-124
+69                android:value="com.google.firebase.components.ComponentRegistrar" />
+69-->[:firebase_core] /Users/shark/AndroidStudioProjects/university_management_system/build/firebase_core/intermediates/merged_manifest/release/AndroidManifest.xml:13:17-82
+70        </service>
+71
+72        <provider
+72-->[:image_picker_android] /Users/shark/AndroidStudioProjects/university_management_system/build/image_picker_android/intermediates/merged_manifest/release/AndroidManifest.xml:10:9-18:20
+73            android:name="io.flutter.plugins.imagepicker.ImagePickerFileProvider"
+73-->[:image_picker_android] /Users/shark/AndroidStudioProjects/university_management_system/build/image_picker_android/intermediates/merged_manifest/release/AndroidManifest.xml:11:13-82
+74            android:authorities="com.example.university_management_system.flutter.image_provider"
+74-->[:image_picker_android] /Users/shark/AndroidStudioProjects/university_management_system/build/image_picker_android/intermediates/merged_manifest/release/AndroidManifest.xml:12:13-74
+75            android:exported="false"
+75-->[:image_picker_android] /Users/shark/AndroidStudioProjects/university_management_system/build/image_picker_android/intermediates/merged_manifest/release/AndroidManifest.xml:13:13-37
+76            android:grantUriPermissions="true" >
+76-->[:image_picker_android] /Users/shark/AndroidStudioProjects/university_management_system/build/image_picker_android/intermediates/merged_manifest/release/AndroidManifest.xml:14:13-47
+77            <meta-data
+77-->[:image_picker_android] /Users/shark/AndroidStudioProjects/university_management_system/build/image_picker_android/intermediates/merged_manifest/release/AndroidManifest.xml:15:13-17:75
+78                android:name="android.support.FILE_PROVIDER_PATHS"
+78-->[:image_picker_android] /Users/shark/AndroidStudioProjects/university_management_system/build/image_picker_android/intermediates/merged_manifest/release/AndroidManifest.xml:16:17-67
+79                android:resource="@xml/flutter_image_picker_file_paths" />
+79-->[:image_picker_android] /Users/shark/AndroidStudioProjects/university_management_system/build/image_picker_android/intermediates/merged_manifest/release/AndroidManifest.xml:17:17-72
+80        </provider>
+81
+82        <activity
+82-->[:url_launcher_android] /Users/shark/AndroidStudioProjects/university_management_system/build/url_launcher_android/intermediates/merged_manifest/release/AndroidManifest.xml:10:9-13:74
+83            android:name="io.flutter.plugins.urllauncher.WebViewActivity"
+83-->[:url_launcher_android] /Users/shark/AndroidStudioProjects/university_management_system/build/url_launcher_android/intermediates/merged_manifest/release/AndroidManifest.xml:11:13-74
+84            android:exported="false"
+84-->[:url_launcher_android] /Users/shark/AndroidStudioProjects/university_management_system/build/url_launcher_android/intermediates/merged_manifest/release/AndroidManifest.xml:12:13-37
+85            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+85-->[:url_launcher_android] /Users/shark/AndroidStudioProjects/university_management_system/build/url_launcher_android/intermediates/merged_manifest/release/AndroidManifest.xml:13:13-71
+86
+87        <provider
+87-->[:printing] /Users/shark/AndroidStudioProjects/university_management_system/build/printing/intermediates/merged_manifest/release/AndroidManifest.xml:10:9-18:20
+88            android:name="net.nfet.flutter.printing.PrintFileProvider"
+88-->[:printing] /Users/shark/AndroidStudioProjects/university_management_system/build/printing/intermediates/merged_manifest/release/AndroidManifest.xml:11:13-71
+89            android:authorities="com.example.university_management_system.flutter.printing"
+89-->[:printing] /Users/shark/AndroidStudioProjects/university_management_system/build/printing/intermediates/merged_manifest/release/AndroidManifest.xml:12:13-68
+90            android:exported="false"
+90-->[:printing] /Users/shark/AndroidStudioProjects/university_management_system/build/printing/intermediates/merged_manifest/release/AndroidManifest.xml:13:13-37
+91            android:grantUriPermissions="true" >
+91-->[:printing] /Users/shark/AndroidStudioProjects/university_management_system/build/printing/intermediates/merged_manifest/release/AndroidManifest.xml:14:13-47
+92            <meta-data
+92-->[:image_picker_android] /Users/shark/AndroidStudioProjects/university_management_system/build/image_picker_android/intermediates/merged_manifest/release/AndroidManifest.xml:15:13-17:75
+93                android:name="android.support.FILE_PROVIDER_PATHS"
+93-->[:image_picker_android] /Users/shark/AndroidStudioProjects/university_management_system/build/image_picker_android/intermediates/merged_manifest/release/AndroidManifest.xml:16:17-67
+94                android:resource="@xml/flutter_printing_file_paths" />
+94-->[:image_picker_android] /Users/shark/AndroidStudioProjects/university_management_system/build/image_picker_android/intermediates/merged_manifest/release/AndroidManifest.xml:17:17-72
+95        </provider>
+96        <provider
+96-->[:share_plus] /Users/shark/AndroidStudioProjects/university_management_system/build/share_plus/intermediates/merged_manifest/release/AndroidManifest.xml:10:9-18:20
+97            android:name="dev.fluttercommunity.plus.share.ShareFileProvider"
+97-->[:share_plus] /Users/shark/AndroidStudioProjects/university_management_system/build/share_plus/intermediates/merged_manifest/release/AndroidManifest.xml:11:13-77
+98            android:authorities="com.example.university_management_system.flutter.share_provider"
+98-->[:share_plus] /Users/shark/AndroidStudioProjects/university_management_system/build/share_plus/intermediates/merged_manifest/release/AndroidManifest.xml:12:13-74
+99            android:exported="false"
+99-->[:share_plus] /Users/shark/AndroidStudioProjects/university_management_system/build/share_plus/intermediates/merged_manifest/release/AndroidManifest.xml:13:13-37
+100            android:grantUriPermissions="true" >
+100-->[:share_plus] /Users/shark/AndroidStudioProjects/university_management_system/build/share_plus/intermediates/merged_manifest/release/AndroidManifest.xml:14:13-47
+101            <meta-data
+101-->[:image_picker_android] /Users/shark/AndroidStudioProjects/university_management_system/build/image_picker_android/intermediates/merged_manifest/release/AndroidManifest.xml:15:13-17:75
+102                android:name="android.support.FILE_PROVIDER_PATHS"
+102-->[:image_picker_android] /Users/shark/AndroidStudioProjects/university_management_system/build/image_picker_android/intermediates/merged_manifest/release/AndroidManifest.xml:16:17-67
+103                android:resource="@xml/flutter_share_file_paths" />
+103-->[:image_picker_android] /Users/shark/AndroidStudioProjects/university_management_system/build/image_picker_android/intermediates/merged_manifest/release/AndroidManifest.xml:17:17-72
+104        </provider>
+105
+106        <uses-library
+106-->[androidx.window:window:1.0.0-beta04] /Users/shark/.gradle/caches/transforms-3/49bc944d29f70d45aa5add8e43e3247e/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:25:9-27:40
+107            android:name="androidx.window.extensions"
+107-->[androidx.window:window:1.0.0-beta04] /Users/shark/.gradle/caches/transforms-3/49bc944d29f70d45aa5add8e43e3247e/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:26:13-54
+108            android:required="false" />
+108-->[androidx.window:window:1.0.0-beta04] /Users/shark/.gradle/caches/transforms-3/49bc944d29f70d45aa5add8e43e3247e/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:27:13-37
+109        <uses-library
+109-->[androidx.window:window:1.0.0-beta04] /Users/shark/.gradle/caches/transforms-3/49bc944d29f70d45aa5add8e43e3247e/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:28:9-30:40
+110            android:name="androidx.window.sidecar"
+110-->[androidx.window:window:1.0.0-beta04] /Users/shark/.gradle/caches/transforms-3/49bc944d29f70d45aa5add8e43e3247e/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:29:13-51
+111            android:required="false" />
+111-->[androidx.window:window:1.0.0-beta04] /Users/shark/.gradle/caches/transforms-3/49bc944d29f70d45aa5add8e43e3247e/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:30:13-37
+112
+113        <provider
+113-->[com.google.firebase:firebase-common:20.1.1] /Users/shark/.gradle/caches/transforms-3/38e97678fc0b2269e99f6580e70ed26a/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:26:9-31:39
+114            android:name="com.google.firebase.provider.FirebaseInitProvider"
+114-->[com.google.firebase:firebase-common:20.1.1] /Users/shark/.gradle/caches/transforms-3/38e97678fc0b2269e99f6580e70ed26a/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:27:13-77
+115            android:authorities="com.example.university_management_system.firebaseinitprovider"
+115-->[com.google.firebase:firebase-common:20.1.1] /Users/shark/.gradle/caches/transforms-3/38e97678fc0b2269e99f6580e70ed26a/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:28:13-72
+116            android:directBootAware="true"
+116-->[com.google.firebase:firebase-common:20.1.1] /Users/shark/.gradle/caches/transforms-3/38e97678fc0b2269e99f6580e70ed26a/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:29:13-43
+117            android:exported="false"
+117-->[com.google.firebase:firebase-common:20.1.1] /Users/shark/.gradle/caches/transforms-3/38e97678fc0b2269e99f6580e70ed26a/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:30:13-37
+118            android:initOrder="100" />
+118-->[com.google.firebase:firebase-common:20.1.1] /Users/shark/.gradle/caches/transforms-3/38e97678fc0b2269e99f6580e70ed26a/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:31:13-36
+119
+120        <meta-data
+120-->[com.google.android.gms:play-services-basement:18.0.0] /Users/shark/.gradle/caches/transforms-3/601d4158b382ad9f634d3bbb23a34c83/transformed/jetified-play-services-basement-18.0.0/AndroidManifest.xml:21:9-23:69
+121            android:name="com.google.android.gms.version"
+121-->[com.google.android.gms:play-services-basement:18.0.0] /Users/shark/.gradle/caches/transforms-3/601d4158b382ad9f634d3bbb23a34c83/transformed/jetified-play-services-basement-18.0.0/AndroidManifest.xml:22:13-58
+122            android:value="@integer/google_play_services_version" />
+122-->[com.google.android.gms:play-services-basement:18.0.0] /Users/shark/.gradle/caches/transforms-3/601d4158b382ad9f634d3bbb23a34c83/transformed/jetified-play-services-basement-18.0.0/AndroidManifest.xml:23:13-66
+123    </application>
+124
+125</manifest>
