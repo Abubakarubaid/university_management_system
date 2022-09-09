@@ -12,6 +12,7 @@ import '../../../models/dpt_model.dart';
 import '../../../providers/app_provider.dart';
 import '../../../utilities/base/my_message.dart';
 import '../../../utilities/constants.dart';
+import '../../../widgets/primary_dropdown_field.dart';
 import '../../../widgets/progress_bar.dart';
 
 class ViewTimeSlots extends StatefulWidget {
@@ -29,6 +30,14 @@ class _ViewTimeSlotsState extends State<ViewTimeSlots> {
   List<DepartmentModel> departmentList = [];
   DepartmentModel dptSelectedValue = DepartmentModel(departmentId: 0, departmentName: "Select Department", departmentType: "Demo");
   var items;
+
+
+  var itemsType = [
+    "Select Type",
+    "Morning",
+    "Evening"
+  ];
+  String typeSelectedValue = "Select Type";
 
   @override
   void initState() {
@@ -195,6 +204,17 @@ class _ViewTimeSlotsState extends State<ViewTimeSlots> {
                     ],),
                   ),
                 ),
+                const SizedBox(height: 20,),
+                PrimaryDropDownFiled(
+                    hint: "Select Type",
+                    selectedValue: typeSelectedValue,
+                    items: itemsType,
+                    onChange: (text) {
+                      setState(() {
+                        typeSelectedValue = text.toString();
+                      });
+                    }
+                ),
                 Visibility(visible: Provider.of<AppProvider>(context, listen: true).dialogProgress, child: const SizedBox(height: 80,child: ProgressBarWidget())),
               ],),
             )
@@ -211,9 +231,12 @@ class _ViewTimeSlotsState extends State<ViewTimeSlots> {
                     MyMessage.showFailedMessage("End time is missing", context);
                   } else if(dptSelectedValue.departmentName == "Select Department"){
                     MyMessage.showFailedMessage("Please Select Department", context);
+                  }else if(typeSelectedValue == "Select Type"){
+                    MyMessage.showFailedMessage("Slot type is missing", context);
                   }else{
                     timeSlotsModel.timeslot = "${startTime} - ${endTime}";
                     timeSlotsModel.departmentModel = dptSelectedValue;
+                    timeSlotsModel.timeslotType = typeSelectedValue;
                     Provider.of<AppProvider>(context, listen: false).addTimeSlot(timeSlotsModel, Constants.getAuthToken().toString()).then((value) {
                       if(value.isSuccess){
                         MyMessage.showSuccessMessage(value.message, context);
@@ -239,9 +262,14 @@ class _ViewTimeSlotsState extends State<ViewTimeSlots> {
                     MyMessage.showFailedMessage("Start time is missing", context);
                   } else if(endTime == "End Time"){
                     MyMessage.showFailedMessage("End time is missing", context);
+                  } else if(typeSelectedValue == "Select Type"){
+                    MyMessage.showFailedMessage("Slot type is missing", context);
                   }else{
                     if(dptSelectedValue.departmentName != "Select Department"){
                       timeSlotsModel.departmentModel = dptSelectedValue;
+                    }
+                    if(typeSelectedValue != "Select Type"){
+                      timeSlotsModel.timeslotType = typeSelectedValue;
                     }
                     timeSlotsModel.timeslot = "${startTime} - ${endTime}";
 
@@ -317,10 +345,11 @@ class _ViewTimeSlotsState extends State<ViewTimeSlots> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                final splitted = appProvider.timeSlotList[index].timeslot.split('-');
+                                final splitted = appProvider.timeSlotList[index].timeslot.split(' - ');
                                 setState(() {
                                   startTime = splitted[0];
                                   endTime = splitted[1];
+                                  typeSelectedValue = appProvider.timeSlotList[index].timeslotType;
                                 });
                                 _addSlotsDialog(appProvider.timeSlotList[index]);
                               },

@@ -15,6 +15,8 @@ import 'package:university_management_system/ui/admin/subjects/view_subjects.dar
 import 'package:university_management_system/ui/admin/teachers/view_teachers.dart';
 import 'package:university_management_system/ui/admin/timeslots/view_timeslots.dart';
 import 'package:university_management_system/ui/admin/timetable/timetable_page.dart';
+import 'package:university_management_system/ui/admin/timetable/timetable_page_new.dart';
+import 'package:university_management_system/ui/admin/timetable/timtable_assignment.dart';
 import 'package:university_management_system/ui/admin/workload/workload_assignment.dart';
 import 'package:university_management_system/ui/profile/user_profile.dart';
 import 'package:university_management_system/ui/settings_screen.dart';
@@ -70,7 +72,8 @@ class _DashboardState extends State<Dashboard> {
                 children: const <Widget>[
                   AdminDashboardNew(),
                   SelectAttendance(),
-                  TimeTablePage(),
+                  //TimeTablePage(),
+                  TimeTablePageNew(),
                   SettingsScreen(),
                 ],
               ),

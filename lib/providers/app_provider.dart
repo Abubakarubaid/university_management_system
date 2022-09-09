@@ -87,10 +87,11 @@ class AppProvider with ChangeNotifier{
   }
 
   Future<ResponseModel> fetchAllDepartments(String token)async{
+    print("__________________________________: YES");
     progress = true;
+    departmentList.clear();
     notifyListeners();
     ResponseModel responseModel;
-    departmentList.clear();
 
     ApiResponse apiResponse = await appRepo.fetchAllDepartments(token);
 
@@ -101,7 +102,10 @@ class AppProvider with ChangeNotifier{
       parsedResponse["data"].forEach((e) {
         DepartmentModel departmentModel = DepartmentModel.getInstance();
         departmentModel = DepartmentModel.fromJson(e);
-        departmentList.add(departmentModel);
+        int count = departmentList.where((c) => c.departmentId == departmentModel.departmentId).toList().length;
+        if(count == 0) {
+          departmentList.add(departmentModel);
+        }
       });
 
       responseModel = ResponseModel(true, parsedResponse["message"]);
@@ -1979,14 +1983,85 @@ class AppProvider with ChangeNotifier{
 
     ApiResponse apiResponse = await appRepo.addBulkTimeTable(data, token);
 
-    var parsedResponse = json.decode(apiResponse.response!.body);
-    Constants.printMessage(Constants.BULK_TIMETABLE_ADD, parsedResponse.toString());
+    print("_______________________: ${apiResponse.response!.body}");
 
-    if (apiResponse.response != null && parsedResponse["success"]) {
-      responseModel = ResponseModel(true, parsedResponse["message"]);
+    try {
+      var parsedResponse = json.decode(apiResponse.response!.body);
+      Constants.printMessage(
+          Constants.BULK_TIMETABLE_ADD, parsedResponse.toString());
+
+      if (apiResponse.response != null && parsedResponse["success"]) {
+        responseModel = ResponseModel(true, parsedResponse["message"]);
+        progress = false;
+      } else {
+        String errorMessage = parsedResponse["message"];
+        responseModel = ResponseModel(false, errorMessage);
+        progress = false;
+      }
+    }catch(e){
+      String errorMessage = "There is Technical Issue! Try Again";
+      responseModel = ResponseModel(false, errorMessage);
       progress = false;
-    } else {
-      String errorMessage = parsedResponse["message"];
+    }
+    notifyListeners();
+    return responseModel;
+  }
+
+  Future<ResponseModel> replaceTimeTable(String data1, String data2, String token)async{
+    progress = true;
+    notifyListeners();
+    ResponseModel responseModel;
+
+    ApiResponse apiResponse = await appRepo.replaceTimeTable(data1, data2, token);
+
+    print("_______________________: ${apiResponse.response!.body}");
+
+    try {
+      var parsedResponse = json.decode(apiResponse.response!.body);
+      Constants.printMessage(
+          Constants.BULK_TIMETABLE_ADD, parsedResponse.toString());
+
+      if (apiResponse.response != null && parsedResponse["success"]) {
+        responseModel = ResponseModel(true, parsedResponse["message"]);
+        progress = false;
+      } else {
+        String errorMessage = parsedResponse["message"];
+        responseModel = ResponseModel(false, errorMessage);
+        progress = false;
+      }
+    }catch(e){
+      String errorMessage = "There is Technical Issue! Try Again";
+      responseModel = ResponseModel(false, errorMessage);
+      progress = false;
+    }
+    notifyListeners();
+    return responseModel;
+  }
+
+  Future<ResponseModel> updateSlotTimeTable(TimeTableUploadModel model, String token)async{
+    progress = true;
+    notifyListeners();
+    ResponseModel responseModel;
+
+    ApiResponse apiResponse = await appRepo.updateSlotTimeTable(model, token);
+
+    print("_______________________: ${apiResponse.response!.body}");
+
+    try {
+      var parsedResponse = json.decode(apiResponse.response!.body);
+      Constants.printMessage(
+          Constants.BULK_TIMETABLE_ADD, parsedResponse.toString());
+
+      if (apiResponse.response != null && parsedResponse["success"]) {
+        responseModel = ResponseModel(true, parsedResponse["message"]);
+        progress = false;
+      } else {
+        String errorMessage = parsedResponse["message"];
+        responseModel = ResponseModel(false, errorMessage);
+        progress = false;
+      }
+    }catch(e){
+      String errorMessage = "There is Technical Issue! Try Again";
       responseModel = ResponseModel(false, errorMessage);
       progress = false;
     }
@@ -2075,6 +2150,7 @@ class AppProvider with ChangeNotifier{
         TimeSlotsModel timeSlotsModel = TimeSlotsModel.getInstance();
         timeSlotsModel.timeslotId = element["timeslot"]["id"];
         timeSlotsModel.timeslot = element["timeslot"]["time_slot"];
+        timeSlotsModel.timeslotType = element["timeslot"]["type"];
 
         TeacherOwnTimeTableModel timeTableModel = TeacherOwnTimeTableModel.getInstance();
         timeTableModel.timeTableId = element["id"];
@@ -2094,6 +2170,127 @@ class AppProvider with ChangeNotifier{
           teacherTimeTableList.add(timeTableModel);
         }
       });
+
+      responseModel = ResponseModel(true, parsedResponse["message"]);
+      progress = false;
+    } else {
+      String errorMessage = parsedResponse["data"];
+      responseModel = ResponseModel(false, errorMessage);
+      progress = false;
+    }
+    notifyListeners();
+    return responseModel;
+  }
+
+  Future<ResponseModel> fetchAllTimeTable(String token)async{
+    progress = true;
+    teacherTimeTableList.clear();
+    notifyListeners();
+    ResponseModel responseModel;
+
+    ApiResponse apiResponse = await appRepo.fetchAllTimeTable(token);
+
+    var parsedResponse = json.decode(apiResponse.response!.body);
+    Constants.printMessage(Constants.SINGLE_TIMETABLE_ADD, parsedResponse.toString());
+
+    if (apiResponse.response != null && parsedResponse["success"]) {
+
+      parsedResponse["data"].forEach((element) {
+        UserModel userModel = UserModel.getInstance();
+        userModel.userId = element["user"]["id"];
+        userModel.userName = element["user"]["name"].toString();
+        userModel.userEmail = element["user"]["email"].toString();
+        userModel.userPhone = element["user"]["phone"].toString();
+        userModel.userGender = element["user"]["gender"].toString();
+        userModel.userImage = element["user"]["image"].toString();
+        userModel.userType = element["user"]["type"].toString();
+        userModel.userStatus = element["user"]["status"].toString();
+        userModel.userAddress = element["user"]["address"].toString();
+        userModel.userCnic = element["user"]["cnic_no"].toString();
+        if(element["user"]["staff"] != "null"){
+          userModel.userExaminationPassedMPhil = "M.Phill";
+          userModel.mPhilPassedExamSubject = element["user"]["staff"]["mPhilPassedExamSubject"].toString();
+          userModel.mPhilPassedExamYear = element["user"]["staff"]["mPhilPassedExamYear"].toString();
+          userModel.mPhilPassedExamDivision = element["user"]["staff"]["mPhilPassedExamDivision"].toString();
+          userModel.mPhilPassedExamInstitute = element["user"]["staff"]["mPhilPassedExamInstitute"].toString();
+          userModel.userExaminationPassedPhd = element["user"]["staff"]["userExaminationPassedPhd"].toString();
+          userModel.phdPassedExamSubject = element["user"]["staff"]["phdPassedExamSubject"].toString();
+          userModel.phdPassedExamYear = element["user"]["staff"]["phdPassedExamYear"].toString();
+          userModel.phdPassedExamDivision = element["user"]["staff"]["phdPassedExamDivision"].toString();
+          userModel.phdPassedExamInstitute = element["user"]["staff"]["phdPassedExamInstitute"].toString();
+          userModel.userSpecializedField = element["user"]["staff"]["userSpecializedField"].toString();
+          userModel.userGraduationLevelExperience = element["user"]["staff"]["userGraduationLevelExperience"].toString();
+          userModel.userPostGraduationLevelExperience = element["user"]["staff"]["userPostGraduationLevelExperience"].toString();
+          userModel.userSignature = element["user"]["staff"]["Signature"].toString();
+          userModel.userDepartment = element["user"]["staff"]["department_id"].toString();
+          userModel.userQualification = element["user"]["staff"]["qualification"].toString();
+          userModel.userDesignation = element["user"]["staff"]["designation"].toString();
+          userModel.totalAllowedCreditHours = int.parse(element["user"]["staff"]["total_allowed_credit_hours"].toString());
+          userModel.userDesignation = element["user"]["staff"]["designation"].toString();
+        }
+
+        WorkloadAssignmentModel workloadAssignmentModel = WorkloadAssignmentModel.getInstance();
+        workloadAssignmentModel.workloadId = element["workloads"]["id"];
+        workloadAssignmentModel.workDemanded = element["workloads"]["work_demanded"];
+        workloadAssignmentModel.workloadStatus = element["workloads"]["status"];
+        workloadAssignmentModel.classRoutine = element["workloads"]["routine"];
+
+        ClassModel classModel = ClassModel.getInstance();
+        classModel.classId = element["workloads"]["department_class"]["id"];
+        classModel.className = element["workloads"]["department_class"]["name"];
+        classModel.classSemester = element["workloads"]["department_class"]["semester"];
+        classModel.classType = element["workloads"]["department_class"]["type"];
+
+        DepartmentModel departmentModel = DepartmentModel.getInstance();
+        departmentModel.departmentId = element["workloads"]["department"]["id"];
+        departmentModel.departmentName = element["workloads"]["department"]["name"];
+        departmentModel.departmentType = element["workloads"]["department"]["type"];
+
+        DepartmentModel subDepartmentModel = DepartmentModel.getInstance();
+        departmentModel.departmentId = element["workloads"]["sub_department"]["id"];
+        departmentModel.departmentName = element["workloads"]["sub_department"]["name"];
+        departmentModel.departmentType = element["workloads"]["sub_department"]["type"];
+
+        SubjectModel subjectModel = SubjectModel.getInstance();
+        subjectModel.subjectId = element["workloads"]["subject"]["id"];
+        subjectModel.subjectName = element["workloads"]["subject"]["name"];
+        subjectModel.subjectCode = element["workloads"]["subject"]["code"];
+        subjectModel.creditHours = int.parse(element["workloads"]["subject"]["credit_hour"]);
+
+        workloadAssignmentModel.classModel = classModel;
+        workloadAssignmentModel.departmentModel = departmentModel;
+        workloadAssignmentModel.subDepartmentModel = subDepartmentModel;
+        workloadAssignmentModel.subjectModel = subjectModel;
+
+        RoomsModel roomsModel = RoomsModel.getInstance();
+        roomsModel.roomId = element["room"]["id"];
+        roomsModel.roomName = element["room"]["name"];
+
+        TimeSlotsModel timeSlotsModel = TimeSlotsModel.getInstance();
+        timeSlotsModel.timeslotId = element["timeslot"]["id"];
+        timeSlotsModel.timeslot = element["timeslot"]["time_slot"];
+        timeSlotsModel.timeslotType = element["timeslot"]["type"];
+
+        TeacherOwnTimeTableModel timeTableModel = TeacherOwnTimeTableModel.getInstance();
+        timeTableModel.timeTableId = element["id"];
+        timeTableModel.workloadId = int.parse(element["workload_id"]);
+        timeTableModel.roomId = int.parse(element["room_id"]);
+        timeTableModel.timeSlotId = int.parse(element["time_slot_id"]);
+        timeTableModel.userId = int.parse(element["user_id"]);
+        timeTableModel.date = element["date"];
+        timeTableModel.day = element["day"];
+        timeTableModel.status = element["status"];
+        timeTableModel.roomsModel = roomsModel;
+        timeTableModel.userModel = userModel;
+        timeTableModel.timeSlotsModel = timeSlotsModel;
+        timeTableModel.workloadAssignmentModel = workloadAssignmentModel;
+
+        if(timeTableModel.status == "Active") {
+          teacherTimeTableList.add(timeTableModel);
+        }
+      });
+
+      teacherTimeTableList.sort((a, b) => a.timeTableId.compareTo(b.timeTableId));
 
       responseModel = ResponseModel(true, parsedResponse["message"]);
       progress = false;

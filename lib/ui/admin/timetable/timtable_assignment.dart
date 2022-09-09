@@ -47,7 +47,7 @@ class _TimeTableAssignmentState extends State<TimeTableAssignment> {
   String daySelectedValue = "Select Day";
 
   List<TimeSlotsModel> timeslotList = [];
-  TimeSlotsModel slotSelectedValue = TimeSlotsModel(timeslotId: 0, timeslot: "Select Time Slot", departmentModel: DepartmentModel.getInstance());
+  TimeSlotsModel slotSelectedValue = TimeSlotsModel(timeslotId: 0, timeslot: "Select Time Slot", departmentModel: DepartmentModel.getInstance(), timeslotType: "Select Type");
   var timeslotItems;
 
   List<RoomsModel> roomList = [];

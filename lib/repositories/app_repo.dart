@@ -276,6 +276,7 @@ class AppRepo{
         body: {
           "department_id": timeSlotsModel.departmentModel.departmentId.toString(),
           "time_slot": timeSlotsModel.timeslot,
+          "type": timeSlotsModel.timeslotType,
         });
     if(response.body.isNotEmpty){
       apiResponse = ApiResponse(response,null,null);
@@ -295,6 +296,7 @@ class AppRepo{
         body: {
           "department_id": timeSlotsModel.departmentModel.departmentId.toString(),
           "time_slot": timeSlotsModel.timeslot,
+          "type": timeSlotsModel.timeslotType,
         });
     if(response.body.isNotEmpty){
       apiResponse = ApiResponse(response,null,null);
@@ -798,9 +800,68 @@ class AppRepo{
     }
   }
 
+  Future<ApiResponse> replaceTimeTable(String data1, String data2, String token)async{
+    ApiResponse apiResponse;
+    var response = await http.post(Uri.parse(IPConfigurations.replaceTimeTableApi),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+        body: {
+          "id_1": data1,
+          "id_2": data2,
+        });
+    if(response.body.isNotEmpty){
+      apiResponse = ApiResponse(response,null,null);
+      return apiResponse;
+    }else{
+      apiResponse = ApiResponse.withError("Error");
+      return apiResponse;
+    }
+  }
+
+  Future<ApiResponse> updateSlotTimeTable(TimeTableUploadModel model, String token)async{
+    ApiResponse apiResponse;
+    var response = await http.post(Uri.parse(IPConfigurations.updateSingleTimeTableApi),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+        body: {
+          "id": model.timetable_id.toString(),
+          "workload_id": model.workload_id.toString(),
+          "room_id": model.roomId.toString(),
+          "time_slot_id": model.timeSlotId.toString(),
+          "user_id": model.userId.toString(),
+          "date": model.date.toString(),
+          "day": model.day.toString(),
+          "status": model.status.toString(),
+        });
+    if(response.body.isNotEmpty){
+      apiResponse = ApiResponse(response,null,null);
+      return apiResponse;
+    }else{
+      apiResponse = ApiResponse.withError("Error");
+      return apiResponse;
+    }
+  }
+
   Future<ApiResponse> fetchSingleTimeTable(int userId, String token)async{
     ApiResponse apiResponse;
     var response = await http.get(Uri.parse("${IPConfigurations.fetchSingleTeacherTimeTableApi}?user_id=$userId"),
+        headers: {
+          'Authorization': 'Bearer $token',
+        });
+    if(response.body.isNotEmpty){
+      apiResponse = ApiResponse(response,null,null);
+      return apiResponse;
+    }else{
+      apiResponse = ApiResponse.withError("Error");
+      return apiResponse;
+    }
+  }
+
+  Future<ApiResponse> fetchAllTimeTable(String token)async{
+    ApiResponse apiResponse;
+    var response = await http.post(Uri.parse(IPConfigurations.fetchAllTimeTableApi),
         headers: {
           'Authorization': 'Bearer $token',
         });

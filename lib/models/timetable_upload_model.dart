@@ -7,6 +7,7 @@ import 'class_model.dart';
 import 'dpt_model.dart';
 
 class TimeTableUploadModel {
+  int timetable_id = 0;
   int workload_id = 0;
   int departmentId = 0;
   int userId = 0;
@@ -32,6 +33,20 @@ class TimeTableUploadModel {
 
   Map<String,dynamic> toJson(){
     return {
+      "workload_id": workload_id,
+      "department_id": departmentId,
+      "user_id": userId,
+      "room_id": roomId,
+      "time_slot_id": timeSlotId,
+      "day": day,
+      "date": date,
+      "status": status,
+    };
+  }
+
+  Map<String,dynamic> toReplaceJson(){
+    return {
+      "id": timetable_id,
       "workload_id": workload_id,
       "department_id": departmentId,
       "user_id": userId,

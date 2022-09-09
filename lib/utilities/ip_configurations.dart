@@ -52,6 +52,8 @@ class IPConfigurations{
 
   static String addTimeTableApi = "${serverIp}timetables";
   static String addBulkTimeTableApi = "${serverIp}add-bulk-timetable";
+  static String replaceTimeTableApi = "${serverIp}replace-timetable";
+  static String updateSingleTimeTableApi = "${serverIp}update-single-timetable";
   static String fetchSingleTeacherTimeTableApi = "${serverIp}timetables";
   static String fetchAllTimeTableApi = "${serverIp}fetch-timetable";
 

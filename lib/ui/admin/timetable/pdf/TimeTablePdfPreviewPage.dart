@@ -6,17 +6,16 @@ import 'package:university_management_system/models/teacher_model.dart';
 import 'package:university_management_system/models/workload_assignment_model.dart';
 import '../../../../assets/app_assets.dart';
 import '../../../../models/rooms_model.dart';
+import '../../../../models/teacher_own_timetable_model.dart';
 import '../../../../models/timeslots_model.dart';
 import '../../../../models/user_model.dart';
 import '../../../../models/workload_model.dart';
 import 'TimeTablePdfExport.dart';
 
 class TimeTablePdfPreviewPage extends StatelessWidget {
-  List<WorkloadAssignmentModel> workloadList;
-  List<TeacherModel> teachersList;
-  List<RoomsModel> roomsList;
+  List<TeacherOwnTimeTableModel> teacherTimeTableList;
   List<TimeSlotsModel> slotsList;
-  TimeTablePdfPreviewPage({required this.workloadList, required this.teachersList, required this.roomsList, required this.slotsList, Key? key}) : super(key: key);
+  TimeTablePdfPreviewPage({required this.teacherTimeTableList, required this.slotsList, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +32,7 @@ class TimeTablePdfPreviewPage extends StatelessWidget {
                 canChangeOrientation: true,
                 canDebug: false,
                 padding: const EdgeInsets.only(top: 100),
-                build: (context) => makeTimeTablePdf(workloadList, teachersList, roomsList, slotsList),
+                build: (context) => makeTimeTablePdf(teacherTimeTableList, slotsList),
               ),
               Container(
                 width: double.infinity,

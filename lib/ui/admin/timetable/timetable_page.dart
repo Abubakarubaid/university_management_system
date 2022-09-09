@@ -190,17 +190,17 @@ class _TimeTablePageState extends State<TimeTablePage> {
                             ),
                           ),
                         ),
-                        GestureDetector(
+                        /*GestureDetector(
                             onTap: () async {
-                              /*setState(() {
+                              *//*setState(() {
                               dptSelectedValue = departmentList[0];
-                            });*/
+                            });*//*
                               Navigator.of(context).push(MaterialPageRoute(builder: (context) => TimeTablePdfPreviewPage(workloadList: appProvider.workloadList, teachersList: appProvider.teacherList, roomsList: appProvider.roomList, slotsList: appProvider.timeSlotList,)));
                             },
-                            child: Container(alignment: Alignment.center, padding: const EdgeInsets.all(10), margin: const EdgeInsets.only(top: 20), height: 50, width: 50, child: Center(child: Icon(Icons.picture_as_pdf, color: Colors.blue,)))),
+                            child: Container(alignment: Alignment.center, padding: const EdgeInsets.all(10), margin: const EdgeInsets.only(top: 20), height: 50, width: 50, child: Center(child: Icon(Icons.picture_as_pdf, color: Colors.blue,)))),*/
                       ],
                     ),
-                    Visibility(
+                    /*Visibility(
                       visible: progressData,
                       child: PrimaryButton(
                         width: double.infinity,
@@ -229,6 +229,34 @@ class _TimeTablePageState extends State<TimeTablePage> {
                           });
                         }
                       ),
+                    ),*/
+
+                    PrimaryButton(
+                        width: double.infinity,
+                        height: 50,
+                        buttonMargin: const EdgeInsets.only(top: 20, bottom: 10),
+                        buttonPadding: const EdgeInsets.all(12),
+                        buttonText: "Generate Time Table",
+                        buttonTextStyle: AppAssets.latoBold_whiteColor_16,
+                        shadowColor: AppAssets.shadowColor,
+                        buttonRadius: BorderRadius.circular(30),
+                        onPress: () async {
+                          await SharedPreferences.getInstance().then((pref) {
+                            String model = pref.getString("time_table_bulk_data").toString();
+                            Provider.of<AppProvider>(context, listen: false)
+                                .addBulkTimeTable(model, authToken)
+                                .then((value) {
+                              if (value.isSuccess) {
+                                setState(() {
+                                  pref.setString("time_table_bulk_data", "");
+                                });
+                                MyMessage.showSuccessMessage(value.message, context);
+                              } else {
+                                MyMessage.showFailedMessage(value.message, context);
+                              }
+                            });
+                          });
+                        }
                     ),
                     Expanded(
                       child: appProvider.progress ?
